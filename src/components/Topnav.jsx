@@ -1,4 +1,5 @@
 import { IMG_MENU } from "@/lib/assets"
+import { X } from "lucide-react"
 import GlassSurface from "@/components/GlassSurface"
 import useScrollTheme from "@/hooks/useScrollTheme"
 
@@ -29,11 +30,17 @@ export default function Topnav({ menuOpen = false, onToggleMenu }) {
           aria-controls="bubble-menu"
           className="flex cursor-pointer items-center justify-center border-none bg-transparent p-[12px]"
         >
-          <img
-            alt="Menu"
-            className={`block size-[40px] transition-[transform,filter] duration-300 ${isLight ? 'invert' : ''} ${menuOpen ? 'rotate-90' : ''}`}
-            src={IMG_MENU}
-          />
+          <span className="relative block size-[40px] transition-[transform] duration-300">
+            <img
+              alt="Menu"
+              className={`block size-[40px] transition-[transform,filter] duration-300 ${isLight ? 'invert' : ''} ${menuOpen ? 'rotate-90 scale-0' : ''}`}
+              src={IMG_MENU}
+            />
+            <X
+              strokeWidth={1.5}
+              className={`absolute inset-0 size-[40px] text-white transition-[transform,opacity] duration-300 ${isLight ? 'text-paper-dark' : ''} ${menuOpen ? 'scale-100 opacity-100' : 'scale-50 opacity-0'}`}
+            />
+          </span>
         </button>
       </GlassSurface>
     </div>

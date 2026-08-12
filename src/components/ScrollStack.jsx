@@ -85,7 +85,6 @@ const ScrollStack = ({
     isUpdatingRef.current = true;
 
     const { scrollTop, containerHeight } = getScrollData();
-    const stackPositionPx = parsePercentage(stackPosition, containerHeight);
     const scaleEndPositionPx = parsePercentage(scaleEndPosition, containerHeight);
 
     const endElement = useWindowScroll
@@ -93,15 +92,51 @@ const ScrollStack = ({
       : scrollerRef.current?.querySelector('.scroll-stack-end');
 
     const endElementTop = endElement ? getElementOffset(endElement) : 0;
+    const pinEnd = endElementTop - containerHeight / 2;
+
+    // First pass: determine which cards are pinned (using static stackPosition for trigger calc)
+    const staticStackPositionPx = parsePercentage(stackPosition, containerHeight);
+    const isPinnedArr = cardsRef.current.map((card, i) => {
+      if (!card) return false;
+      const cardTop = getElementOffset(card);
+      const triggerStart = cardTop - staticStackPositionPx - itemStackDistance * i;
+      return scrollTop >= triggerStart && scrollTop <= endElementTop - containerHeight / 2;
+    });
+
+    const pinnedCount = isPinnedArr.filter(Boolean).length;
+
+    // Dynamic stackPosition: shift upward so fan bottom stays at ~85vh
+    // Estimate fan height: sum of (cardHeight * targetScale) + (pinnedCount-1)*itemStackDistance
+    let fanHeight = 0;
+    if (pinnedCount > 0) {
+      let totalHeight = 0;
+      for (let i = 0; i < cardsRef.current.length; i++) {
+        if (!isPinnedArr[i]) break;
+        const targetScale = baseScale + i * itemScale;
+        // Card layout height is 90vh (810px at 900px viewport)
+        const cardLayoutHeight = containerHeight * 0.9; // 90vh
+        totalHeight += cardLayoutHeight * targetScale;
+      }
+      fanHeight = totalHeight + (pinnedCount - 1) * itemStackDistance;
+    }
+
+    // Target: keep fan bottom at ~85% of viewport
+    const targetBottom = containerHeight * 0.85;
+    const dynamicStackPositionPx = Math.max(
+      containerHeight * 0.06, // floor: 6% from top
+      Math.min(
+        staticStackPositionPx,
+        targetBottom - fanHeight
+      )
+    );
 
     cardsRef.current.forEach((card, i) => {
       if (!card) return;
 
       const cardTop = getElementOffset(card);
-      const triggerStart = cardTop - stackPositionPx - itemStackDistance * i;
+      const triggerStart = cardTop - dynamicStackPositionPx - itemStackDistance * i;
       const triggerEnd = cardTop - scaleEndPositionPx;
-      const pinStart = cardTop - stackPositionPx - itemStackDistance * i;
-      const pinEnd = endElementTop - containerHeight / 2;
+      const pinStart = cardTop - dynamicStackPositionPx - itemStackDistance * i;
 
       const scaleProgress = calculateProgress(scrollTop, triggerStart, triggerEnd);
       const targetScale = baseScale + i * itemScale;
@@ -113,7 +148,7 @@ const ScrollStack = ({
         let topCardIndex = 0;
         for (let j = 0; j < cardsRef.current.length; j++) {
           const jCardTop = getElementOffset(cardsRef.current[j]);
-          const jTriggerStart = jCardTop - stackPositionPx - itemStackDistance * j;
+          const jTriggerStart = jCardTop - dynamicStackPositionPx - itemStackDistance * j;
           if (scrollTop >= jTriggerStart) {
             topCardIndex = j;
           }
@@ -129,14 +164,13 @@ const ScrollStack = ({
       const isPinned = scrollTop >= pinStart && scrollTop <= pinEnd;
 
       if (isPinned) {
-        translateY = scrollTop - cardTop + stackPositionPx + itemStackDistance * i;
+        translateY = scrollTop - cardTop + dynamicStackPositionPx + itemStackDistance * i;
       } else if (scrollTop > pinEnd) {
-        translateY = pinEnd - cardTop + stackPositionPx + itemStackDistance * i;
+        translateY = pinEnd - cardTop + dynamicStackPositionPx + itemStackDistance * i;
       }
 
-      // Keep cards that have joined the stack on top of the next full-size
-      // featured card that is still scrolling up, so the fixed stack stays visible.
-      const newZ = isPinned || scrollTop > pinEnd ? 10 + i : 1;
+      // Z-index: approaching in front (z=100), then joins stack when pinned
+      const newZ = isPinned || scrollTop > pinEnd ? 10 + i : 100;
       if (card.style.zIndex !== String(newZ)) {
         card.style.zIndex = String(newZ);
       }

@@ -184,7 +184,7 @@ export default function BubbleMenu({
       style={style}
       aria-hidden={!open}
     >
-      <div className="bubble-backdrop" aria-hidden="true" />
+      <div className="bubble-backdrop" aria-hidden="true" onClick={onClose} />
       <ul className="pill-list" role="menu" aria-label="Menu links">
         {menuItems.map((item, idx) => (
           <li key={idx} role="none" className="pill-col">
