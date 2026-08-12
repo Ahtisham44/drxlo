@@ -10,11 +10,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "font-geist text-[20px] font-medium leading-[1.5] px-[24px] py-[12px] text-paper-light hover:bg-[rgba(242,245,249,0.12)]",
-        lime: "font-geist text-[20px] font-medium leading-[1.5] px-[24px] py-[12px] text-drx-lime hover:bg-[rgba(242,245,249,0.12)]",
+          "font-syne font-bold text-[20px] leading-[1.5] px-[24px] py-[12px] text-paper-light hover:bg-[rgba(242,245,249,0.12)]",
+        lime: "font-syne text-[20px] font-bold leading-[1.5] px-[24px] py-[12px] text-drx-lime hover:bg-[rgba(242,245,249,0.12)]",
         cta: "font-syne text-[32px] font-bold leading-[1.3] tracking-[-2px] bg-paper-dark px-[32px] py-[20px] text-paper-light w-full hover:bg-[rgba(5,8,10,0.9)] transition-colors",
         outline:
-          "border-border bg-background hover:bg-muted hover:text-foreground",
+          "bg-background hover:bg-muted hover:text-foreground",
         ghost: "hover:bg-muted hover:text-foreground",
         destructive:
           "bg-destructive/10 text-destructive hover:bg-destructive/20",

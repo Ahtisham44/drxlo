@@ -41,6 +41,7 @@ const CARDS = [
 export default function Services() {
   return (
     <section
+      id="services"
       data-name="Section - Services"
       className="flex w-full shrink-0 flex-col items-center gap-48 overflow-clip bg-white px-[64px] py-[96px]"
     >

@@ -1,6 +1,11 @@
+import { useEffect, useRef, useState } from "react"
+import { useMotionValue, useTransform, motion } from "motion/react"
+import Lenis from "lenis"
 import { Button } from "@/components/ui/button"
 import GlassSurface from "@/components/GlassSurface"
 import Topnav from "@/components/Topnav"
+import BubbleMenu from "@/components/BubbleMenu"
+import Work from "@/components/Work"
 import Services from "@/components/Services"
 import FAQ from "@/components/FAQ"
 import Form from "@/components/Form"
@@ -19,13 +24,6 @@ import {
   IMG_WHY_52,
   IMG_WHY_53,
 } from "@/lib/assets"
-
-const GRADIENT_MAGENTA =
-  "url(\"data:image/svg+xml;utf8,<svg viewBox='0 0 1166 670.11' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect x='0' y='0' height='100%' width='100%' fill='url(%23grad)' opacity='1'/><defs><radialGradient id='grad' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(-58.3 52.438 -65.628 -46.583 1166 -0.000055532)'><stop stop-color='rgba(240,0,188,1)' offset='0'/><stop stop-color='rgba(184,0,144,1)' offset='0.5'/><stop stop-color='rgba(127,0,100,1)' offset='1'/></radialGradient></defs></svg>\"), linear-gradient(90deg, rgb(5, 8, 10) 0%, rgb(5, 8, 10) 100%)"
-const GRADIENT_GREEN =
-  "url(\"data:image/svg+xml;utf8,<svg viewBox='0 0 1286 739.08' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect x='0' y='0' height='100%' width='100%' fill='url(%23grad)' opacity='1'/><defs><radialGradient id='grad' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(-64.3 57.835 -72.382 -51.377 1286 -0.000061247)'><stop stop-color='rgba(0,240,152,1)' offset='0'/><stop stop-color='rgba(0,215,121,1)' offset='0.25'/><stop stop-color='rgba(0,189,91,1)' offset='0.5'/><stop stop-color='rgba(0,164,60,1)' offset='0.75'/><stop stop-color='rgba(0,138,30,1)' offset='1'/></radialGradient></defs></svg>\"), linear-gradient(90deg, rgb(5, 8, 10) 0%, rgb(5, 8, 10) 100%)"
-const GRADIENT_PURPLE =
-  "url(\"data:image/svg+xml;utf8,<svg viewBox='0 0 1392 800' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect x='0' y='0' height='100%' width='100%' fill='url(%23grad)' opacity='1'/><defs><radialGradient id='grad' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(-69.6 62.602 -78.348 -55.612 1392 -0.000066295)'><stop stop-color='rgba(151,71,255,1)' offset='0'/><stop stop-color='rgba(113,42,206,1)' offset='0.5'/><stop stop-color='rgba(94,27,181,1)' offset='0.75'/><stop stop-color='rgba(75,12,156,1)' offset='1'/></radialGradient></defs></svg>\")"
 
 const STATS = [
   "15+ products delivered",
@@ -51,19 +49,173 @@ const PROBLEMS = [
   { syneLines: ["Manual processes ", "waste hours every week?"], align: "center" },
 ]
 
+const ITEMS = [
+  ...PROBLEMS.map((p) =>
+    p.syneLines
+      ? { type: "syneLines", lines: p.syneLines }
+      : { type: "pair", serif: p.serif, syne: p.syne }
+  ),
+  { type: "soundFamiliar" },
+  { type: "cta" },
+]
+
 const TESTIMONIAL_QUOTE =
   "Working with this team was fantastic! They revamped my website to be sleek, modern, and fully functional. Great communication and timely delivery—highly recommend for boosting your online presence!"
 
+const MENU_ITEMS = [
+  {
+    label: "home",
+    href: "#home",
+    ariaLabel: "Home",
+    rotation: -8,
+    hoverStyles: { bgColor: "#ff4d1c", textColor: "#ffffff" },
+  },
+  {
+    label: "work",
+    href: "#work",
+    ariaLabel: "Work",
+    rotation: 8,
+    hoverStyles: { bgColor: "#c8f000", textColor: "#05080a" },
+  },
+  {
+    label: "services",
+    href: "#services",
+    ariaLabel: "Services",
+    rotation: 8,
+    hoverStyles: { bgColor: "#3b82f6", textColor: "#ffffff" },
+  },
+  {
+    label: "why us",
+    href: "#why",
+    ariaLabel: "Why us",
+    rotation: 8,
+    hoverStyles: { bgColor: "#8b5cf6", textColor: "#ffffff" },
+  },
+  {
+    label: "stories",
+    href: "#stories",
+    ariaLabel: "Stories",
+    rotation: -8,
+    hoverStyles: { bgColor: "#ef4444", textColor: "#ffffff" },
+  },
+  {
+    label: "contact",
+    href: "#contact",
+    ariaLabel: "Contact",
+    rotation: -8,
+    hoverStyles: { bgColor: "#10b981", textColor: "#ffffff" },
+  },
+]
+
+function ProblemSlide({ progress, index, count, item }) {
+  const local = useTransform(progress, [index / count, (index + 1) / count], [0, 1])
+  const y = useTransform(local, [0, 0.4, 1], ["100vh", "0", "0"])
+  const scale = useTransform(local, [0.6, 1], [1, 0.7])
+  const opacity = useTransform(local, [0, 0.3, 0.6, 1], [0, 1, 1, 0])
+
+  return (
+    <motion.div
+      style={{ y, scale, opacity }}
+      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[1200px] px-4 text-center"
+    >
+      {item.type === "pair" && (
+        <div className="flex flex-col items-center gap-[0.25px] pb-[1.5px] whitespace-nowrap">
+          <p className="font-instrument text-[52px] text-drx-accent tracking-[-1px] leading-[1.3]">
+            {item.serif}
+          </p>
+          <p className="font-syne text-[39px] font-bold leading-none tracking-[-2px] text-paper-dark">
+            {item.syne}
+          </p>
+        </div>
+      )}
+      {item.type === "syneLines" && (
+        <div className="flex flex-col justify-center font-syne text-[39px] font-bold leading-none tracking-[-2px] text-paper-dark">
+          {item.lines.map((line, i) => (
+            <p key={i} className="leading-none">{line}</p>
+          ))}
+        </div>
+      )}
+      {item.type === "soundFamiliar" && (
+        <p className="font-syne text-[104px] font-extrabold leading-none tracking-[-3.5px] text-paper-dark">
+          Sound familiar? you&apos;re not alone.
+        </p>
+      )}
+      {item.type === "cta" && (
+        <p className="font-syne text-[104px] font-extrabold leading-none tracking-[-3.5px]">
+          <span className="font-instrument text-[84px] italic font-light tracking-[-3.5px] text-paper-dark">If you&apos;re experiencing any of these,</span>{" "}
+          <br />
+          <span className="text-drx-accent">Drxlo</span>{" "}
+          <span className="text-paper-dark">already solved it.</span>
+        </p>
+      )}
+    </motion.div>
+  )
+}
+
 function App() {
+  const problemsRef = useRef(null)
+  const scrollYProgress = useMotionValue(0)
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      direction: "vertical",
+      smooth: true,
+      smoothTouch: false,
+      anchors: true,
+    })
+
+    function raf(time) {
+      lenis.raf(time)
+      requestAnimationFrame(raf)
+    }
+
+    requestAnimationFrame(raf)
+
+    const updateScrollProgress = () => {
+      const section = problemsRef.current
+      if (!section) return
+      const rect = section.getBoundingClientRect()
+      const viewportHeight = window.innerHeight
+      const sectionHeight = rect.height
+      const scrollTop = -rect.top
+      const maxScroll = sectionHeight - viewportHeight
+      const progress = Math.max(0, Math.min(1, scrollTop / maxScroll))
+      scrollYProgress.set(progress)
+    }
+
+    lenis.on("scroll", updateScrollProgress)
+    updateScrollProgress()
+
+    return () => {
+      lenis.off("scroll", updateScrollProgress)
+      lenis.destroy()
+    }
+  }, [])
+
   return (
     <div
       data-name="Html → Body"
       className="relative flex w-full flex-col items-start bg-paper-dark"
     >
-      <Topnav />
+      <Topnav menuOpen={menuOpen} onToggleMenu={() => setMenuOpen((open) => !open)} />
+      <BubbleMenu
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        items={MENU_ITEMS}
+        menuBg="#ffffff"
+        menuContentColor="#111111"
+        useFixedPosition
+        animationEase="back.out(1.5)"
+        animationDuration={0.5}
+        staggerDelay={0.12}
+      />
 
       {/* ===== Hero ===== */}
       <section
+        id="home"
         data-name="Section - HERO - Marquee Hero macrostructure"
         className="relative flex w-full shrink-0 flex-col items-start overflow-clip px-[64px] pb-[120px] pt-[64px]"
       >
@@ -120,7 +272,7 @@ function App() {
         </div>
 
         {/* ===== Trusted by partners ===== */}
-        <div className="relative shrink-0 text-paper-light whitespace-nowrap pt-48">
+        <div className="relative shrink-0 text-paper-light whitespace-nowrap pt-60">
           <p className="font-syne text-[49px] font-bold leading-none tracking-[-3px]">Trusted by</p>
           <p className="font-syne text-[84px] font-extrabold leading-none tracking-[-3.5px]">28 partners</p>
         </div>
@@ -129,146 +281,42 @@ function App() {
             <img
               alt="Partners screenshot"
               src={IMG_PARTNERS}
-              className="absolute left-[-3.89%] top-[-339.29%] h-[454.31%] w-[121.84%] max-w-none"
+              className="absolute left-[-3.8%] top-[-339.29%] h-[454.31%] w-[121.84%] max-w-none"
             />
           </div>
         </div>
       </section>
-
-      {/* ===== Trusted by partners ===== */}
-      <section
-        data-name="Section - Trusted by partners"
-        className="flex w-full shrink-0 flex-col items-start gap-[40px] overflow-clip px-[64px] pb-[120px] pt-[96px]"
-      >
-        <div className="relative shrink-0 text-paper-light whitespace-nowrap">
-          <p className="font-syne text-[49px] font-bold leading-none tracking-[-3px]">Trusted by</p>
-          <p className="font-syne text-[84px] font-extrabold leading-none tracking-[-3.5px]">28 partners</p>
-        </div>
-        <div className="relative h-[273.348px] w-[1758px] shrink-0">
-          <div className="pointer-events-none absolute inset-0 overflow-hidden">
-            <img
-              alt="Partners screenshot"
-              src={IMG_PARTNERS}
-              className="absolute left-[-3.89%] top-[-339.29%] h-[454.31%] w-[121.84%] max-w-none"
-            />
-          </div>
-        </div>
-      </section>
+      
 
       {/* ===== Problems ===== */}
       <section
         data-name="Section - Problems"
-        className="flex w-full shrink-0 flex-col items-end gap-[200px] overflow-clip bg-white px-[64px] py-[96px]"
+        ref={problemsRef}
+        className="relative w-full overflow-clip bg-white px-[64px]"
+        style={{ height: `${ITEMS.length * 100}vh` }}
       >
-        <div className="relative flex w-full flex-col items-end gap-[120px]">
-          {PROBLEMS.map((p) => {
-            const isCenter = p.align === "center"
-            const isStart = p.align === "start"
-            return (
-              <div
-                key={p.syne || p.syneLines?.[0]}
-                className={`relative flex shrink-0 flex-col items-start gap-[0.25px] pb-[1.5px] whitespace-nowrap ${isStart ? "w-full" : isCenter ? "w-full text-center" : ""}`}
-                style={{ justifyContent: isStart ? "flex-start" : isCenter ? "center" : "flex-start" }}
-              >
-                {p.syneLines ? (
-                  <div className={`flex shrink-0 flex-col justify-center font-syne text-[39px] font-bold leading-none tracking-[-2px] text-center text-paper-dark ${isCenter ? "w-full" : ""}`}>
-                    {p.syneLines.map((line) => (
-                      <p key={line} className="leading-none">
-                        {line}
-                      </p>
-                    ))}
-                  </div>
-                ) : (
-                  <>
-                    <p className={`font-instrument text-[52px] text-drx-accent tracking-[-1px] ${isStart ? "w-full" : ""}`}>
-                      {p.serif}
-                    </p>
-                    <p className={`font-syne text-[39px] font-bold leading-none text-center tracking-[-2px] text-paper-dark ${isStart ? "w-full" : ""}`}>
-                      {p.syne}
-                    </p>
-                  </>
-                )}
-              </div>
-            )
-          })}
+        <div className="sticky top-0 h-screen flex items-center justify-center w-full">
+          {ITEMS.map((item, index) => (
+            <ProblemSlide
+              key={index}
+              progress={scrollYProgress}
+              index={index}
+              count={ITEMS.length}
+              item={item}
+            />
+          ))}
         </div>
-
-        <p className="w-full shrink-0 text-center font-syne text-[104px] font-extrabold leading-none tracking-[-3.5px] text-paper-dark">
-          Sound familiar? you're not alone.
-        </p>
-
-        <p className="w-full shrink-0 text-center font-syne text-[104px] font-extrabold leading-none tracking-[-3.5px]">
-          <span className="font-instrument text-[84px] italic tracking-[-3.5px] text-paper-dark">If you're experiencing any of these,</span>{" "}
-          <span className="text-drx-accent">Drxlo</span>{" "}
-          <span className="text-paper-dark">already solved it.</span>
-        </p>
       </section>
 
       {/* ===== Work ===== */}
-      <section data-name="Section - work" className="relative h-[1530px] w-full shrink-0 overflow-clip bg-white">
-        <div
-          className="absolute left-[137px] top-[26.34px] flex h-[670.115px] w-[1166px] flex-col items-start gap-[67.011px] overflow-clip rounded-[65.506px] border-4 border-[rgba(255,255,255,0.1)] p-[36.856px]"
-          style={{ backgroundImage: GRADIENT_MAGENTA }}
-        >
-          <div className="relative flex shrink-0 items-end">
-            <p className="font-syne text-[46.908px] tracking-[-1.6753px] text-white whitespace-nowrap">
-              <span className="leading-[1.3]">Saved </span>
-              <span className="font-instrument italic leading-[1.3]">40%</span>
-              <span className="leading-[1.3]"> business cost </span>
-            </p>
-          </div>
-          <div className="absolute left-[312.63px] top-[187.82px] h-[529.391px] w-[859.422px] rounded-[17.456px] border-[0.873px] border-[rgba(255,255,255,0.4)] bg-[rgba(255,255,255,0.1)] shadow-[17.456px_3.491px_20.947px_0px_rgba(0,0,0,0.25)]" />
-        </div>
-
-        <div
-          className="absolute left-[77px] top-[62.8px] flex h-[739.081px] w-[1286px] flex-col items-start gap-[73.908px] overflow-clip rounded-[68.954px] border-4 border-[rgba(255,255,255,0.1)] p-[40.649px]"
-          style={{ backgroundImage: GRADIENT_GREEN }}
-        >
-          <div className="relative flex shrink-0 items-end">
-            <p className="font-syne text-[51.736px] tracking-[-1.8477px] text-white whitespace-nowrap">
-              <span className="leading-[1.3]">Saved </span>
-              <span className="font-instrument italic leading-[1.3]">40%</span>
-              <span className="leading-[1.3]"> business cost </span>
-            </p>
-          </div>
-          <div className="absolute left-[345.22px] top-[207.56px] h-[583.874px] w-[947.871px] rounded-[19.252px] border-[0.963px] border-[rgba(255,255,255,0.4)] bg-[rgba(255,255,255,0.1)] shadow-[19.252px_3.85px_23.103px_0px_rgba(0,0,0,0.25)]" />
-        </div>
-
-        <div
-          className="absolute left-[24px] right-[24px] top-[109.89px] flex h-[800px] flex-col items-start gap-[80px] overflow-clip rounded-[64px] border-4 border-[rgba(255,255,255,0.1)] p-[44px]"
-          style={{ backgroundImage: GRADIENT_PURPLE }}
-        >
-          <div className="relative flex shrink-0 items-end">
-            <p className="font-syne text-[56px] tracking-[-2px] text-white whitespace-nowrap">
-              <span className="leading-[1.3]">Saved </span>
-              <span className="font-instrument italic leading-[1.3]">40%</span>
-              <span className="leading-[1.3]"> business cost </span>
-            </p>
-          </div>
-          <div className="absolute left-[410px] top-[187.11px] h-[564px] w-[916px] rounded-[19.252px] border-[0.963px] border-[rgba(255,255,255,0.4)] bg-[rgba(255,255,255,0.06)] shadow-[0px_3.85px_40px_16px_rgba(0,0,0,0.25)]" />
-          <div className="absolute left-[296px] top-[277.11px] h-[564px] w-[314px] rounded-[19.252px] border-[0.963px] border-[rgba(255,255,255,0.4)] bg-[rgba(255,255,255,0.06)] shadow-[0px_3.85px_40px_16px_rgba(0,0,0,0.25)]" />
-        </div>
-
-        <p className="absolute left-[calc(50%-621px)] top-[1098.5px] -translate-y-1/2 font-syne text-[56px] tracking-[-3px] text-paper-dark whitespace-nowrap">
-          Not find what you are looking for?
-        </p>
-        <p className="absolute left-[calc(50%+167px)] top-[1281.5px] -translate-y-1/2 font-syne text-[56px] font-bold tracking-[-3px] text-paper-dark whitespace-nowrap">
-          ⌄
-        </p>
-        <div className="absolute left-[calc(50%-56px)] top-[1250px] -translate-y-1/2 font-syne text-[56px] tracking-[-3px] text-paper-dark whitespace-nowrap">
-          <p className="mb-0 font-extrabold leading-[1.3] whitespace-pre">Show me </p>
-          <p className="font-extrabold whitespace-pre">
-            <span className="leading-[1.3] underline">Saas</span>
-            <span className="leading-[1.3]">    solutions</span>
-          </p>
-        </div>
-      </section>
+      <Work />
 
       {/* ===== Services ===== */}
       <Services />
 
       {/* ===== Why ===== */}
       <section
+        id="why"
         data-name="Section - Why"
         className="flex w-full shrink-0 flex-col items-start gap-48 overflow-clip bg-drx-accent px-[64px] py-[96px]"
       >
@@ -348,6 +396,7 @@ function App() {
 
       {/* ===== Testimonials ===== */}
       <section
+        id="stories"
         data-name="Section - Testimonials"
         className="relative flex h-[1180px] w-full shrink-0 flex-col items-center gap-[120px] overflow-clip px-[64px] pb-[120px] pt-[96px]"
       >

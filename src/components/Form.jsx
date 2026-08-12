@@ -30,6 +30,7 @@ const ROWS = [
 export default function Form() {
   return (
     <section
+      id="contact"
       data-name="Section - Form"
       className="relative flex w-full shrink-0 flex-col items-start gap-[120px] overflow-clip bg-white px-[64px] py-[96px]"
     >
@@ -82,8 +83,8 @@ export default function Form() {
           </div>
         </div>
 
-        <GlassSurface width="100%" height="auto" borderRadius={99} backgroundOpacity={0.06}>
-          <Button variant="default" className="relative">
+        <GlassSurface width="100%" height="auto" borderRadius={99} backgroundOpacity={0.06} theme="light" className="p-[0px]">
+          <Button variant="cta" className="relative" size="default">
             Book Discovery Call
           </Button>
         </GlassSurface>
