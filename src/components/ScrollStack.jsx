@@ -1,5 +1,6 @@
-import { useLayoutEffect, useRef, useCallback } from 'react';
+import { useLayoutEffect, useEffect, useRef, useCallback } from 'react';
 import Lenis from 'lenis';
+import { useLenis } from '@/context/LenisContext';
 import './ScrollStack.css';
 
 export const ScrollStackItem = ({ children, itemClassName = '', itemStyle = {} }) => (
@@ -15,9 +16,9 @@ const ScrollStack = ({
   stackPosition = '20%',
   scaleEndPosition = '10%',
   baseScale = 0.85,
-  scaleDuration = 0.5,
+  scaleDuration = 1,
   rotationAmount = 0,
-  blurAmount = 0,
+  blurAmount = 2,
   useWindowScroll = false,
   onStackComplete
 }) => {
@@ -29,6 +30,10 @@ const ScrollStack = ({
   const endElementRef = useRef(null);
   const lastTransformsRef = useRef(new Map());
   const isUpdatingRef = useRef(false);
+  // Cached un-transformed document offsets for every card + the end spacer.
+  // Reading them is pure arithmetic — no getBoundingClientRect() per frame.
+  const layoutRef = useRef({ offsets: [], endOffset: 0 });
+  const lenis = useLenis();
 
   const calculateProgress = useCallback((scrollTop, start, end) => {
     if (scrollTop < start) return 0;
@@ -60,25 +65,31 @@ const ScrollStack = ({
     }
   }, [useWindowScroll]);
 
-  const getElementOffset = useCallback(
-    element => {
-      if (useWindowScroll) {
-        const rect = element.getBoundingClientRect();
-        // Strip the current translateY from the rect so we always return the
-        // card's LAYOUT (un-transformed) document offset. Using the transformed
-        // rect here feeds the translate back into its own pin math and makes
-        // the cards oscillate instead of holding their stacked position.
-        const transform = element.style.transform || '';
-        const match = transform.match(/translate3d\(0px, ([-\d.]+)px/);
-        const ty = match ? parseFloat(match[1]) : 0;
-        return rect.top + window.scrollY - ty;
-      } else {
-        // offsetTop is layout-based and ignores transforms.
-        return element.offsetTop;
-      }
-    },
-    [useWindowScroll]
-  );
+  // Read each card's UN-TRANSFORMED document offset once and cache it. Cards
+  // only move via our own translate3d, so these offsets are constant until the
+  // layout changes (resize). Caching removes the per-frame getBoundingClientRect()
+  // calls that previously forced a synchronous reflow for every card on every
+  // frame while the stack was near the viewport.
+  const measureLayout = useCallback(() => {
+    const stripTranslateY = (element) => {
+      const transform = element?.style.transform || '';
+      const match = transform.match(/translate3d\(0px, ([-\d.]+)px/);
+      return match ? parseFloat(match[1]) : 0;
+    };
+
+    const offsets = cardsRef.current.map((card) => {
+      if (!card) return 0;
+      const rect = card.getBoundingClientRect();
+      return rect.top + window.scrollY - stripTranslateY(card);
+    });
+
+    const end = endElementRef.current;
+    const endOffset = end
+      ? end.getBoundingClientRect().top + window.scrollY - stripTranslateY(end)
+      : 0;
+
+    layoutRef.current = { offsets, endOffset };
+  }, []);
 
   const updateCardTransforms = useCallback(() => {
     if (!cardsRef.current.length || isUpdatingRef.current) return;
@@ -87,17 +98,14 @@ const ScrollStack = ({
 
     const { scrollTop, containerHeight } = getScrollData();
     const scaleEndPositionPx = parsePercentage(scaleEndPosition, containerHeight);
-
-    const endElement = endElementRef.current;
-
-    const endElementTop = endElement ? getElementOffset(endElement) : 0;
+    const staticStackPositionPx = parsePercentage(stackPosition, containerHeight);
+    const { offsets, endOffset: endElementTop } = layoutRef.current;
     const pinEnd = endElementTop - containerHeight / 2;
 
     // First pass: determine which cards are pinned (using static stackPosition for trigger calc)
-    const staticStackPositionPx = parsePercentage(stackPosition, containerHeight);
     const isPinnedArr = cardsRef.current.map((card, i) => {
       if (!card) return false;
-      const cardTop = getElementOffset(card);
+      const cardTop = offsets[i];
       const triggerStart = cardTop - staticStackPositionPx - itemStackDistance * i;
       return scrollTop >= triggerStart && scrollTop <= endElementTop - containerHeight / 2;
     });
@@ -132,7 +140,7 @@ const ScrollStack = ({
     cardsRef.current.forEach((card, i) => {
       if (!card) return;
 
-      const cardTop = getElementOffset(card);
+      const cardTop = offsets[i];
       const triggerStart = cardTop - dynamicStackPositionPx - itemStackDistance * i;
       const triggerEnd = cardTop - scaleEndPositionPx;
       const pinStart = cardTop - dynamicStackPositionPx - itemStackDistance * i;
@@ -146,7 +154,7 @@ const ScrollStack = ({
       if (blurAmount) {
         let topCardIndex = 0;
         for (let j = 0; j < cardsRef.current.length; j++) {
-          const jCardTop = getElementOffset(cardsRef.current[j]);
+          const jCardTop = offsets[j];
           const jTriggerStart = jCardTop - dynamicStackPositionPx - itemStackDistance * j;
           if (scrollTop >= jTriggerStart) {
             topCardIndex = j;
@@ -219,92 +227,11 @@ const ScrollStack = ({
     baseScale,
     rotationAmount,
     blurAmount,
-    useWindowScroll,
     onStackComplete,
     calculateProgress,
     parsePercentage,
-    getScrollData,
-    getElementOffset
+    getScrollData
   ]);
-
-  const handleScroll = useCallback(() => {
-    updateCardTransforms();
-  }, [updateCardTransforms]);
-
-  const setupScroll = useCallback(() => {
-    if (useWindowScroll) {
-      // The app already drives window scroll with a global Lenis. Instead of
-      // relying on scroll events (which can lag or coalesce mid-animation), we
-      // recompute transforms on every animation frame so pinned cards always
-      // hold their exact position in the viewport. Only tick while the stack is
-      // near the viewport, and skip frames where scroll hasn't moved, so the
-      // loop never burns CPU while the user is elsewhere on the page.
-      let lastScrollY = window.scrollY;
-      let started = false;
-      const tick = () => {
-        const y = window.scrollY;
-        if (y !== lastScrollY) {
-          lastScrollY = y;
-          updateCardTransforms();
-        }
-        animationFrameRef.current = requestAnimationFrame(tick);
-      };
-      const start = () => {
-        if (started) return;
-        started = true;
-        animationFrameRef.current = requestAnimationFrame(tick);
-      };
-      const stop = () => {
-        started = false;
-        if (animationFrameRef.current) {
-          cancelAnimationFrame(animationFrameRef.current);
-        }
-      };
-      const scroller = scrollerRef.current;
-      const observer = new IntersectionObserver(
-        ([entry]) => (entry.isIntersecting ? start() : stop()),
-        { rootMargin: '150% 0px' }
-      );
-      observer.observe(scroller);
-      return () => {
-        observer.disconnect();
-        stop();
-      };
-    }
-
-    const scroller = scrollerRef.current;
-    if (!scroller) return () => {};
-
-    const lenis = new Lenis({
-      wrapper: scroller,
-      content: scroller.querySelector('.scroll-stack-inner'),
-      duration: 1.2,
-      easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-      touchMultiplier: 2,
-      infinite: false,
-      wheelMultiplier: 1,
-      lerp: 0.1,
-      syncTouch: true,
-      syncTouchLerp: 0.075
-    });
-
-    lenis.on('scroll', handleScroll);
-
-    const raf = time => {
-      lenis.raf(time);
-      animationFrameRef.current = requestAnimationFrame(raf);
-    };
-    animationFrameRef.current = requestAnimationFrame(raf);
-
-    lenisRef.current = lenis;
-    return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-      lenis.destroy();
-    };
-  }, [handleScroll, useWindowScroll]);
 
   useLayoutEffect(() => {
     const scroller = scrollerRef.current;
@@ -335,17 +262,52 @@ const ScrollStack = ({
       card.style.webkitPerspective = '1000px';
     });
 
-    const cleanupScroll = setupScroll();
-
+    measureLayout();
     updateCardTransforms();
 
+    let cleanupInternal;
+    if (!useWindowScroll) {
+      // Internal-scroller mode owns its own Lenis instance.
+      const internalLenis = new Lenis({
+        wrapper: scroller,
+        content: scroller.querySelector('.scroll-stack-inner'),
+        duration: 1.2,
+        easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smoothWheel: true,
+        touchMultiplier: 2,
+        infinite: false,
+        wheelMultiplier: 1,
+        lerp: 0.1,
+        syncTouch: true,
+        syncTouchLerp: 0.075
+      });
+
+      const handleScroll = () => updateCardTransforms();
+      internalLenis.on('scroll', handleScroll);
+
+      const raf = time => {
+        internalLenis.raf(time);
+        animationFrameRef.current = requestAnimationFrame(raf);
+      };
+      animationFrameRef.current = requestAnimationFrame(raf);
+
+      lenisRef.current = internalLenis;
+      cleanupInternal = () => {
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+        }
+        internalLenis.destroy();
+      };
+    }
+
     return () => {
-      cleanupScroll?.();
+      cleanupInternal?.();
       stackCompletedRef.current = false;
       cardsRef.current = [];
       endElementRef.current = null;
       transformsCache.clear();
       isUpdatingRef.current = false;
+      layoutRef.current = { offsets: [], endOffset: 0 };
     };
   }, [
     itemDistance,
@@ -359,9 +321,34 @@ const ScrollStack = ({
     blurAmount,
     useWindowScroll,
     onStackComplete,
-    setupScroll,
+    measureLayout,
     updateCardTransforms
   ]);
+
+  // Window-scroll mode: the global Lenis already owns window scroll. Drive card
+  // updates straight off its scroll events (plus a passive native listener as a
+  // fallback) instead of a perpetual requestAnimationFrame polling loop. That
+  // means zero work while the page is idle, and updates are aligned exactly to
+  // the scroll, eliminating the duplicate layout pass that caused jank.
+  useEffect(() => {
+    if (!useWindowScroll) return;
+
+    const onScroll = () => updateCardTransforms();
+    const onResize = () => {
+      measureLayout();
+      updateCardTransforms();
+    };
+
+    lenis?.on('scroll', onScroll);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onResize);
+
+    return () => {
+      lenis?.off('scroll', onScroll);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onResize);
+    };
+  }, [useWindowScroll, lenis, updateCardTransforms, measureLayout]);
 
   return (
     <div

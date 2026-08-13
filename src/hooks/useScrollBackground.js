@@ -62,6 +62,8 @@ export default function useScrollBackground(bgRef) {
               start: "top 90%",
               end: "top 30%",
               scrub: 1,
+              fastScrollEnd: true,
+              invalidateOnRefresh: true,
             },
           }
         )

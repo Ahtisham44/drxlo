@@ -51,32 +51,50 @@ export default function Services() {
   const sectionRef = useRef(null)
   const pinRef = useRef(null)
   const trackRef = useRef(null)
+  // Cache the horizontal travel distance so onUpdate never forces a reflow by
+  // reading scrollWidth back every frame.
+  const distanceRef = useRef(0)
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger)
 
-    const getDistance = () =>
-      trackRef.current.scrollWidth - window.innerWidth
+    const measureDistance = () => {
+      distanceRef.current = trackRef.current.scrollWidth - window.innerWidth
+    }
+
+    const handleResize = () => {
+      measureDistance()
+      ScrollTrigger.refresh()
+    }
+
+    measureDistance()
 
     const ctx = gsap.context(() => {
       ScrollTrigger.create({
         trigger: pinRef.current,
         pin: pinRef.current,
         start: "top top",
-        end: () => `+=${getDistance()}`,
+        end: () => `+=${distanceRef.current}`,
         scrub: 1,
         pinSpacing: true,
+        anticipatePin: 1,
+        fastScrollEnd: true,
+        invalidateOnRefresh: true,
         onUpdate: (self) => {
           gsap.set(trackRef.current, {
-            x: -self.progress * getDistance(),
+            x: -self.progress * distanceRef.current,
+            force3D: true,
           })
         },
       })
     }, sectionRef)
 
+    window.addEventListener("resize", handleResize)
+
     ScrollTrigger.refresh()
 
     return () => {
+      window.removeEventListener("resize", handleResize)
       ctx.revert()
     }
   }, [])
@@ -102,7 +120,7 @@ export default function Services() {
       <div ref={pinRef} className="relative flex h-screen w-full items-start overflow-visible pt-40 mb-20">
         <div
           ref={trackRef}
-          className="relative flex h-full w-max items-start gap-[16px] pl-[64px] pr-[64px]"
+          className="relative flex h-full w-max items-start gap-[16px] pl-[64px] pr-[64px] will-change-transform"
         >
           {CARDS.map((card) => (
             <div
@@ -113,6 +131,8 @@ export default function Services() {
                 <img
                   alt=""
                   src={card.image}
+                  loading="lazy"
+                  decoding="async"
                   className="pointer-events-none absolute right-[24px] z-[-1] object-cover"
                   style={{ top: card.imageTop, width: card.imageSize, height: card.imageSize }}
                 />

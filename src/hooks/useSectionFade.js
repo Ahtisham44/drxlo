@@ -38,34 +38,33 @@ export default function useSectionFade() {
           return
         }
 
-        // Fade in once the section scrolls up past the bottom of the viewport
-        gsap.fromTo(
-          el,
-          { opacity: 0 },
-          {
-            opacity: 1,
-            ease: "none",
+        // A single timeline drives the full lifecycle — fade in on entry, stay
+        // visible, then fade out as the section exits the bottom. One
+        // ScrollTrigger scrub means playback always mirrors the scroll
+        // direction, so scrolling back into a section never leaves it stuck
+        // faded out (previously two competing tweens overwrote each other).
+        //
+        // Segment durations are proportional to the scroll distance each phase
+        // should span, so animation progress lines up with the trigger range
+        // end-to-end (total duration === end minus start, in px).
+        const vh = window.innerHeight
+        const sectionHeight = el.offsetHeight
+
+        gsap
+          .timeline({
+            defaults: { ease: "none" },
             scrollTrigger: {
               trigger: el,
               start: "top 90%",
-              end: "top 30%",
+              end: "bottom 25%",
               scrub: 1,
+              fastScrollEnd: true,
+              invalidateOnRefresh: true,
             },
-          }
-        )
-
-        // Fade out while the section exits, giving room for the next one
-        gsap.to(el, {
-          opacity: 0,
-          ease: "none",
-          overwrite: "auto",
-          scrollTrigger: {
-            trigger: el,
-            start: "bottom 75%",
-            end: "bottom 25%",
-            scrub: 1,
-          },
-        })
+          })
+          .fromTo(el, { opacity: 0 }, { opacity: 1, duration: vh * 0.6 })
+          .to(el, { opacity: 1, duration: Math.max(0.001, sectionHeight - vh * 0.45) })
+          .to(el, { opacity: 0, duration: vh * 0.5 })
       })
     })
 
