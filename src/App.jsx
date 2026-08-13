@@ -1,0 +1,488 @@
+import { useEffect, useRef, useState } from "react"
+import { useMotionValue, useTransform, motion } from "motion/react"
+import { useLenis } from "@/context/LenisContext"
+import useScrollBackground from "@/hooks/useScrollBackground"
+import useSectionFade from "@/hooks/useSectionFade"
+import { Button } from "@/components/ui/button"
+import GlassSurface from "@/components/GlassSurface"
+import Topnav from "@/components/Topnav"
+import BubbleMenu from "@/components/BubbleMenu"
+import Work from "@/components/Work"
+import Services from "@/components/Services"
+import FAQ from "@/components/FAQ"
+import Form from "@/components/Form"
+import Footer from "@/components/Footer"
+import {
+  IMG_FINGER,
+  IMG_PARTNERS,
+  IMG_TEST_MAIN,
+  IMG_TEST_MID_A,
+  IMG_TEST_MID_B,
+  IMG_TEST_SMALL,
+  IMG_VECTOR_1,
+  IMG_VECTOR_2,
+  IMG_VECTOR_3,
+  IMG_WHATSAPP,
+  IMG_WHY_52,
+  IMG_WHY_53,
+} from "@/lib/assets"
+
+const STATS = [
+  "15+ products delivered",
+  "10+ industries",
+  "40% admin workload reduction",
+  "90% fewer backend requests",
+]
+
+const PROBLEMS = [
+  {
+    serif: "Your product works well,",
+    syne: "but users don't understand it ?",
+    align: "end",
+  },
+  { serif: "Users sign up happily", syne: "then disappear?", align: "start" },
+  { serif: "Traffic is growing", syne: "Revenue isn't?", align: "end" },
+  {
+    serif: "Your team keeps building features",
+    syne: "but nobody uses?",
+    align: "start",
+  },
+  { syneLines: ["Design and development ", "constantly misalign?"], align: "center" },
+  { syneLines: ["Manual processes ", "waste hours every week?"], align: "center" },
+]
+
+const ITEMS = [
+  ...PROBLEMS.map((p) =>
+    p.syneLines
+      ? { type: "syneLines", lines: p.syneLines }
+      : { type: "pair", serif: p.serif, syne: p.syne }
+  ),
+  { type: "soundFamiliar" },
+  { type: "cta" },
+]
+
+const TESTIMONIAL_QUOTE =
+  "Working with this team was fantastic! They revamped my website to be sleek, modern, and fully functional. Great communication and timely delivery—highly recommend for boosting your online presence!"
+
+const MENU_ITEMS = [
+  {
+    label: "home",
+    href: "#home",
+    ariaLabel: "Home",
+    rotation: -8,
+    hoverStyles: { bgColor: "#ff4d1c", textColor: "#ffffff" },
+  },
+  {
+    label: "work",
+    href: "#work",
+    ariaLabel: "Work",
+    rotation: 8,
+    hoverStyles: { bgColor: "#c8f000", textColor: "#05080a" },
+  },
+  {
+    label: "services",
+    href: "#services",
+    ariaLabel: "Services",
+    rotation: 8,
+    hoverStyles: { bgColor: "#3b82f6", textColor: "#ffffff" },
+  },
+  {
+    label: "why us",
+    href: "#why",
+    ariaLabel: "Why us",
+    rotation: 8,
+    hoverStyles: { bgColor: "#8b5cf6", textColor: "#ffffff" },
+  },
+  {
+    label: "stories",
+    href: "#stories",
+    ariaLabel: "Stories",
+    rotation: -8,
+    hoverStyles: { bgColor: "#ef4444", textColor: "#ffffff" },
+  },
+  {
+    label: "contact",
+    href: "#contact",
+    ariaLabel: "Contact",
+    rotation: -8,
+    hoverStyles: { bgColor: "#10b981", textColor: "#ffffff" },
+  },
+]
+
+function ProblemSlide({ progress, index, count, item }) {
+  const local = useTransform(progress, [index / count, (index + 1) / count], [0, 1])
+  const y = useTransform(local, [0, 0.4, 1], ["100vh", "0", "0"])
+  const scale = useTransform(local, [0.6, 1], [1, 0.7])
+  const opacity = useTransform(local, [0, 0.3, 0.6, 1], [0, 1, 1, 0])
+
+  return (
+    <motion.div
+      style={{ y, scale, opacity }}
+      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[1200px] px-4 text-center"
+    >
+      {item.type === "pair" && (
+        <div className="flex flex-col items-center gap-[0.25px] pb-[1.5px] whitespace-nowrap">
+          <p className="font-instrument text-[52px] text-drx-accent tracking-[-1px] leading-[1.3]">
+            {item.serif}
+          </p>
+          <p className="font-syne text-[39px] font-bold leading-none tracking-[-2px] text-paper-dark">
+            {item.syne}
+          </p>
+        </div>
+      )}
+      {item.type === "syneLines" && (
+        <div className="flex flex-col justify-center font-syne text-[39px] font-bold leading-none tracking-[-2px] text-paper-dark">
+          {item.lines.map((line, i) => (
+            <p key={i} className="leading-none">{line}</p>
+          ))}
+        </div>
+      )}
+      {item.type === "soundFamiliar" && (
+        <p className="font-syne text-[104px] font-extrabold leading-none tracking-[-3.5px] text-paper-dark">
+          Sound familiar? <br /> you&apos;re not alone.
+        </p>
+      )}
+      {item.type === "cta" && (
+        <p className="font-syne text-[104px] font-extrabold leading-none tracking-[-3.5px]">
+          <span className="font-instrument text-[84px] italic font-light tracking-[-3.5px] text-paper-dark">If you&apos;re experiencing any of these,</span>{" "}
+          <br />
+          <span className="text-drx-accent">Drxlo</span>{" "}
+          <span className="text-paper-dark">already solved it.</span>
+        </p>
+      )}
+    </motion.div>
+  )
+}
+
+function App() {
+  const problemsRef = useRef(null)
+  const bgRef = useRef(null)
+  const scrollYProgress = useMotionValue(0)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const lenis = useLenis()
+  useScrollBackground(bgRef)
+  useSectionFade()
+
+  useEffect(() => {
+    if (!lenis) return
+
+    const updateScrollProgress = () => {
+      const section = problemsRef.current
+      if (!section) return
+      const rect = section.getBoundingClientRect()
+      const viewportHeight = window.innerHeight
+      const sectionHeight = rect.height
+      const scrollTop = -rect.top
+      const maxScroll = sectionHeight - viewportHeight
+      const progress = Math.max(0, Math.min(1, scrollTop / maxScroll))
+      scrollYProgress.set(progress)
+    }
+
+    lenis.on("scroll", updateScrollProgress)
+    updateScrollProgress()
+
+    return () => {
+      lenis.off("scroll", updateScrollProgress)
+    }
+  }, [lenis, scrollYProgress])
+
+  return (
+    <div
+      data-name="Html → Body"
+      className="relative isolate flex w-full flex-col items-start"
+    >
+      <div
+        ref={bgRef}
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 -z-10 bg-paper-dark will-change-[background-color]"
+      />
+      <Topnav menuOpen={menuOpen} onToggleMenu={() => setMenuOpen((open) => !open)} />
+      <BubbleMenu
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        items={MENU_ITEMS}
+        menuBg="#ffffff"
+        menuContentColor="#111111"
+        useFixedPosition
+        animationEase="back.out(1.5)"
+        animationDuration={0.5}
+        staggerDelay={0.12}
+      />
+
+      {/* ===== Hero ===== */}
+      <section
+        id="home"
+        data-name="Section - HERO - Marquee Hero macrostructure"
+        className="relative flex w-full shrink-0 flex-col items-start overflow-clip px-[64px] pb-[120px] pt-[64px]"
+      >
+        <div className="absolute left-[40px] top-[0px]">
+          <div className="absolute left-[852.48px] top-[480px] h-[894.578px] w-[839.524px]">
+            <img alt="" src={IMG_VECTOR_3} className="block size-full max-w-none" />
+          </div>
+          <div className="absolute left-[721.04px] top-[548.48px] h-[894.578px] w-[839.524px]">
+            <img alt="" src={IMG_VECTOR_2} className="block size-full max-w-none" />
+          </div>
+          <div className="absolute left-[599px] top-[611.42px] h-[894.578px] w-[839.524px]">
+            <img alt="" src={IMG_VECTOR_1} className="block size-full max-w-none" />
+          </div>
+        </div>
+
+        <div className="relative flex w-full shrink-0 flex-col items-center">
+          <div className="relative flex shrink-0 flex-col items-center gap-[0.25px] pb-[1.5px] text-center tracking-[-3.5px] whitespace-nowrap">
+            <div className="flex shrink-0 flex-col justify-center font-syne text-[104px] font-extrabold text-[#e5e8ec]">
+              <p className="mb-0 leading-none">We design</p>
+              <p className="leading-none">products that</p>
+            </div>
+            <div className="flex shrink-0 flex-col justify-center font-instrument text-[120px] italic text-drx-lime">
+              <p className="leading-none">move businesses forward.</p>
+            </div>
+          </div>
+
+          <div className="relative flex w-full shrink-0 items-center justify-center pt-[64px]">
+            <div className="flex shrink-0 items-start gap-[16px]">
+              <GlassSurface width="auto" height="auto" borderRadius={99} backgroundOpacity={0.06}>
+                <Button variant="lime" asChild>
+                  <a href="mailto:hello@drxlo.com?subject=Free%20Audit%20Request">Book Free Audit</a>
+                </Button>
+              </GlassSurface>
+              <GlassSurface width="auto" height="auto" borderRadius={99} backgroundOpacity={0.06}>
+                <Button variant="default" asChild>
+                  <a
+                    href="https://wa.me/923226247462"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img alt="" src={IMG_WHATSAPP} />
+                    Chat on Whatsapp
+                  </a>
+                </Button>
+              </GlassSurface>
+            </div>
+          </div>
+        </div>
+
+        <div className="absolute bottom-[64px] right-[64px] flex flex-col items-center">
+          <div className="h-[56px] w-px bg-gradient-to-b from-drx-accent to-[rgba(255,77,28,0)]" />
+        </div>
+
+        <div className="relative flex flex-1 items-end pt-64">
+          <div className="flex shrink-0 flex-col justify-center font-instrument text-[52px] text-white tracking-[-1px] whitespace-nowrap">
+            {STATS.map((stat, i) => (
+              <p key={stat} className={`leading-[1.3] ${i === STATS.length - 1 ? "" : "mb-0"}`}>
+                {stat}
+              </p>
+            ))}
+          </div>
+        </div>
+
+        {/* ===== Trusted by partners ===== */}
+        <div className="relative shrink-0 text-paper-light whitespace-nowrap pt-60">
+          <p className="font-syne text-[49px] font-bold leading-none tracking-[-3px]">Trusted by</p>
+          <p className="font-syne text-[84px] font-extrabold leading-none tracking-[-3.5px]">28 partners</p>
+        </div>
+        <div className="relative h-[273.348px] w-[1758px] shrink-0">
+          <div className="pointer-events-none absolute inset-0 overflow-hidden">
+            <img
+              alt="Partners screenshot"
+              src={IMG_PARTNERS}
+              className="absolute left-[-3.8%] top-[-339.29%] h-[454.31%] w-[121.84%] max-w-none"
+            />
+          </div>
+        </div>
+      </section>
+      
+
+      {/* ===== Problems ===== */}
+      <section
+        data-name="Section - Problems"
+        ref={problemsRef}
+        className="relative w-full overflow-clip px-[64px]"
+        style={{ height: `${ITEMS.length * 100}vh` }}
+      >
+        <div className="sticky top-0 h-screen flex items-center justify-center w-full">
+          {ITEMS.map((item, index) => (
+            <ProblemSlide
+              key={index}
+              progress={scrollYProgress}
+              index={index}
+              count={ITEMS.length}
+              item={item}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* ===== Work ===== */}
+      <Work />
+
+      {/* ===== Services ===== */}
+      <Services />
+
+      {/* ===== Why ===== */}
+      <section
+        id="why"
+        data-name="Section - Why"
+        className="flex w-full shrink-0 flex-col items-start gap-48 overflow-clip px-[64px] py-[96px]"
+      >
+        <div className="relative shrink-0 text-[84px] tracking-[-3.5px] whitespace-nowrap">
+          <p className="font-instrument italic leading-none text-paper-dark">What makes</p>
+          <p className="font-syne font-extrabold leading-none text-white">Drxlo Unique</p>
+        </div>
+
+        <div className="relative grid h-auto w-full shrink-0 grid-cols-[repeat(auto-fit,minmax(280px,1fr))] grid-rows-[repeat(2,minmax(0,1fr))] gap-x-[8px] gap-y-[8px] rounded-2xl">
+          <div className="relative col-[1/span_2] row-[1/span_2] flex shrink-0 flex-col items-start gap-[32px] self-stretch justify-self-stretch overflow-clip rounded-[24px] p-[48px]">
+            <div className="absolute inset-[-0.35px_0_0.35px_0] rounded-[56px]">
+              <div className="absolute inset-0 rounded-[56px] bg-[#ccc] mix-blend-color-burn opacity-67" />
+              <div
+                className="absolute inset-0 rounded-[56px]"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.06) 100%), linear-gradient(90deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.8) 100%)",
+                }}
+              />
+            </div>
+            <p className="relative shrink-0 font-mont text-[40px] font-semibold leading-[1.3] tracking-[-0.8px] text-white">
+              Evaluate your expenses against possible savings.
+            </p>
+            <div className="absolute left-1/2 top-[427.65px] h-[384px] w-[516px] -translate-x-1/2 shadow-[0px_0px_40px_0px_rgba(0,0,0,0.4)]">
+              <img alt="" src={IMG_WHY_52} className="pointer-events-none absolute inset-0 size-full max-w-none object-cover" />
+            </div>
+          </div>
+
+          <div className="relative col-3 row-1 flex shrink-0 flex-col items-start justify-center self-stretch justify-self-stretch overflow-clip rounded-[56px] bg-white p-[32px]">
+            <p className="relative shrink-0 w-[238px] font-mont text-[40px] leading-none tracking-[-2.4px] text-paper-dark uppercase whitespace-pre-wrap">
+              <span className="leading-[1.3]">Your Finance, </span>
+              <span className="leading-[1.3]">Our Headache</span>
+            </p>
+          </div>
+
+          <div className="relative col-4 row-1 flex shrink-0 flex-col items-start justify-between self-stretch justify-self-stretch overflow-clip rounded-[24px] p-[32px]">
+            <div className="absolute inset-[-0.35px_0_0.35px_0] rounded-[56px]">
+              <div className="absolute inset-0 rounded-[56px] bg-[#ccc] mix-blend-color-burn opacity-67" />
+              <div
+                className="absolute inset-0 rounded-[56px]"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.06) 100%), linear-gradient(90deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.8) 100%)",
+                }}
+              />
+            </div>
+            <div className="relative size-[96px] overflow-clip">
+              <img alt="" src={IMG_FINGER} className="block size-full max-w-none" />
+            </div>
+            <p className="relative shrink-0 font-mont text-[32px] font-semibold leading-[1.3] tracking-[-0.64px] text-white">
+              Verification on the go
+            </p>
+          </div>
+
+          <div className="relative col-[3/span_2] row-2 flex shrink-0 flex-col items-start gap-[32px] justify-center self-stretch justify-self-stretch overflow-clip rounded-[24px] p-[32px]">
+            <div className="absolute inset-[-0.35px_0_0.35px_0] rounded-[56px]">
+              <div className="absolute inset-0 rounded-[56px] bg-[#ccc] mix-blend-color-burn opacity-67" />
+              <div
+                className="absolute inset-0 rounded-[56px]"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.06) 100%), linear-gradient(90deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.8) 100%)",
+                }}
+              />
+            </div>
+            <p className="relative shrink-0 font-mont text-[32px] font-semibold leading-none tracking-[-0.64px] text-white whitespace-nowrap">
+              <span className="leading-[1.3] whitespace-pre">Collective </span>
+              <span className="leading-[1.3] whitespace-pre">expenses</span>
+              <span className="leading-[1.3] whitespace-pre">under 1 roof</span>
+            </p>
+            <div className="absolute left-[calc(50%+186.5px)] top-[calc(50%+1px)] h-[217px] w-[401px] -translate-x-1/2 -translate-y-1/2 shadow-[0px_0px_40px_0px_rgba(0,0,0,0.4)]">
+              <img alt="" src={IMG_WHY_53} className="pointer-events-none absolute inset-0 size-full max-w-none object-cover" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== Testimonials ===== */}
+      <section
+        id="stories"
+        data-name="Section - Testimonials"
+        className="relative flex h-[1180px] w-full shrink-0 flex-col items-center gap-[120px] overflow-clip px-[64px] pb-[120px] pt-[96px]"
+      >
+        <div className="absolute left-[270.85px] top-[371.19px] flex w-[679.145px] shrink-0 flex-col items-start gap-[82.991px] overflow-clip rounded-[44.262px] border-[5.533px] border-[rgba(255,255,255,0.1)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.5)]">
+          <div className="relative h-[589.929px] w-[687.444px] shrink-0 rounded-[11.065px]">
+            <img alt="" src={IMG_TEST_SMALL} className="pointer-events-none absolute inset-0 size-full max-w-none rounded-[11.065px] object-cover" />
+          </div>
+          <div className="absolute left-[calc(50%-97.51px)] top-[calc(50%+188.46px)] flex w-[409.423px] max-w-[553.2749633789062px] -translate-x-1/2 -translate-y-1/2 flex-col items-start gap-[27.664px]">
+            <div className="flex shrink-0 flex-col items-start">
+              <p className="shrink-0 font-syne text-[22.131px] font-bold leading-[1.3] tracking-[-1.3832px] text-center text-white whitespace-nowrap">Emily Thompson</p>
+              <p className="shrink-0 font-geist text-[11.065px] leading-[1.5] text-[rgba(255,255,255,0.4)]">BrandLite GmbH</p>
+            </div>
+            <p className="shrink-0 font-geist text-[13.832px] font-light leading-[1.5] text-paper-light">{TESTIMONIAL_QUOTE}</p>
+          </div>
+        </div>
+
+        <div className="absolute left-[303px] top-[301.82px] flex w-[838.855px] shrink-0 flex-col items-start gap-[102.508px] overflow-clip rounded-[54.671px] border-[6.834px] border-[rgba(255,255,255,0.1)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.5)]">
+          <div className="relative h-[728.659px] w-[849.106px] shrink-0 rounded-[13.668px]">
+            <img alt="" src={IMG_TEST_MID_A} className="pointer-events-none absolute inset-0 size-full max-w-none rounded-[13.668px] object-cover" />
+          </div>
+          <div className="absolute left-[calc(50%-120.45px)] top-[calc(50%+232.78px)] flex w-[505.705px] max-w-[683.3848876953125px] -translate-x-1/2 -translate-y-1/2 flex-col items-start gap-[34.169px]">
+            <div className="flex shrink-0 flex-col items-start">
+              <p className="shrink-0 font-syne text-[27.335px] font-bold leading-[1.3] tracking-[-1.7085px] text-center text-white whitespace-nowrap">Emily Thompson</p>
+              <p className="shrink-0 font-geist text-[13.668px] leading-[1.5] text-[rgba(255,255,255,0.4)]">BrandLite GmbH</p>
+            </div>
+            <p className="shrink-0 font-geist text-[17.085px] font-light leading-[1.5] text-paper-light">{TESTIMONIAL_QUOTE}</p>
+          </div>
+        </div>
+
+        <div className="absolute left-[510.15px] top-[301.82px] flex w-[838.855px] shrink-0 flex-col items-start gap-[102.508px] overflow-clip rounded-[54.671px] border-[6.834px] border-[rgba(255,255,255,0.1)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.5)]">
+          <div className="relative h-[728.659px] w-[849.106px] shrink-0 rounded-[13.668px]">
+            <img alt="" src={IMG_TEST_MID_B} className="pointer-events-none absolute inset-0 size-full max-w-none rounded-[13.668px] object-cover" />
+          </div>
+          <div className="absolute left-[calc(50%-120.45px)] top-[calc(50%+232.78px)] flex w-[505.705px] max-w-[683.3848876953125px] -translate-x-1/2 -translate-y-1/2 flex-col items-start gap-[34.169px]">
+            <div className="flex shrink-0 flex-col items-start">
+              <p className="shrink-0 font-syne text-[27.335px] font-bold leading-[1.3] tracking-[-1.7085px] text-center text-white whitespace-nowrap">Emily Thompson</p>
+              <p className="shrink-0 font-geist text-[13.668px] leading-[1.5] text-[rgba(255,255,255,0.4)]">BrandLite GmbH</p>
+            </div>
+            <p className="shrink-0 font-geist text-[17.085px] font-light leading-[1.5] text-paper-light">{TESTIMONIAL_QUOTE}</p>
+          </div>
+        </div>
+
+        <div className="relative flex w-full shrink-0 flex-col items-start text-[84px] tracking-[-3.5px] text-paper-light whitespace-nowrap">
+          <p className="font-syne font-extrabold leading-none">Stories</p>
+          <p className="font-instrument italic leading-none">from our partners</p>
+        </div>
+
+        <div className="absolute left-[335px] top-[239.65px] flex w-[982px] shrink-0 flex-col items-start gap-[120px] overflow-clip rounded-[64px] border-8 border-[rgba(255,255,255,0.1)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.5)]">
+          <div className="relative h-[853px] w-[994px] shrink-0 rounded-[16px]">
+            <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[16px]">
+              <img alt="" src={IMG_TEST_MAIN} className="absolute left-0 top-[-39.15%] h-[205.27%] w-full max-w-none" />
+            </div>
+          </div>
+          <div className="absolute bottom-[7px] left-[7px] h-[297px] w-[968px]" data-name="Liquid Glass - Regular - Large">
+            <div
+              className="absolute inset-0 rounded-[66px] opacity-67 shadow-[0px_8px_40px_0px_rgba(0,0,0,0.12)]"
+              style={{
+                backgroundImage:
+                  "linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.06) 100%), linear-gradient(90deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.4) 100%)",
+              }}
+            />
+          </div>
+          <div className="absolute left-[calc(50%-141px)] top-[calc(50%+272.5px)] flex w-[592px] max-w-[800px] -translate-x-1/2 -translate-y-1/2 flex-col items-start gap-[40px]">
+            <div className="flex shrink-0 flex-col items-start">
+              <p className="shrink-0 font-syne text-[32px] font-bold leading-[1.3] tracking-[-2px] text-center text-white whitespace-nowrap">Emily Thompson</p>
+              <p className="shrink-0 font-geist text-[16px] leading-[1.5] text-[rgba(255,255,255,0.4)]">BrandLite GmbH</p>
+            </div>
+            <p className="shrink-0 font-geist text-[20px] font-light leading-[1.5] text-paper-light">{TESTIMONIAL_QUOTE}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== FAQ ===== */}
+      <FAQ />
+
+      {/* ===== Form ===== */}
+      <Form />
+
+      {/* ===== Footer ===== */}
+      <Footer />
+    </div>
+  )
+}
+
+export default App
