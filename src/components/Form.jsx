@@ -32,7 +32,7 @@ export default function Form() {
     <section
       id="contact"
       data-name="Section - Form"
-      className="relative flex w-full shrink-0 flex-col items-start gap-[120px] overflow-clip bg-white px-[64px] py-[96px]"
+      className="relative flex w-full shrink-0 flex-col items-start gap-12 sm:gap-16 md:gap-[120px] overflow-clip bg-white px-4 sm:px-8 md:px-[64px] py-16 sm:py-24 md:py-[96px]"
     >
       {/* <div className="pointer-events-none absolute bottom-[0.35px] left-1/2 flex h-2/6 w-full -translate-x-1/2 items-center justify-center">
         
@@ -45,26 +45,26 @@ export default function Form() {
           />
       </div> */}
 
-      <h2 className="relative shrink-0 font-syne text-[104px] font-extrabold leading-none tracking-[-3.5px] text-paper-dark">
+      <h2 className="relative shrink-0 font-syne text-4xl sm:text-6xl md:text-[104px] font-extrabold leading-none tracking-[-2px] sm:tracking-[-3.5px] text-paper-dark">
         <span className="leading-none">Let's </span>
         <span className="leading-none text-drx-accent">solve</span>
         <span className="leading-none"> the right problem.</span>
       </h2>
 
-      <div className="relative flex w-full flex-col gap-[40px]">
+      <div className="relative flex w-full flex-col gap-10 md:gap-[40px]">
         {ROWS.map((row) => (
-          <div key={row.label} className="flex w-full items-start gap-[120px]">
-            <div className="w-[456px] shrink-0 font-syne text-[41px] font-bold leading-none tracking-[-3px] text-paper-dark">
+          <div key={row.label} className="flex w-full flex-col items-start gap-6 md:flex-row md:items-start md:gap-[120px]">
+            <div className="w-full shrink-0 font-syne text-2xl sm:text-3xl md:w-[456px] md:text-[41px] font-bold leading-none tracking-[-2px] md:tracking-[-3px] text-paper-dark">
               <p>{row.label}</p>
             </div>
-            <div className="flex min-w-px flex-[1_0_0] flex-col items-start">
+            <div className="flex w-full min-w-px flex-[1_0_0] flex-col items-start">
               {row.options.map((option, i) => (
                 <div
                   key={option}
                   className="flex min-h-[80px] w-full items-center gap-[24px] border-b border-paper-dark py-[16px]"
                 >
                   <Checkbox defaultChecked={i === row.checked} />
-                  <p className="font-syne text-[32px] font-medium leading-[1.3] tracking-[-1.2px] text-paper-dark whitespace-nowrap">
+                  <p className="font-syne text-xl sm:text-2xl md:text-[32px] font-medium leading-[1.3] tracking-[-1.2px] text-paper-dark">
                     {option}
                   </p>
                 </div>
@@ -73,11 +73,11 @@ export default function Form() {
           </div>
         ))}
 
-        <div className="flex w-full items-start gap-[120px]">
-          <div className="w-[456px] shrink-0 font-syne text-[41px] font-bold leading-none tracking-[-3px] text-paper-dark">
+        <div className="flex w-full flex-col items-start gap-6 md:flex-row md:items-start md:gap-[120px]">
+          <div className="w-full shrink-0 font-syne text-2xl sm:text-3xl md:w-[456px] md:text-[41px] font-bold leading-none tracking-[-2px] md:tracking-[-3px] text-paper-dark">
             <p>Your email</p>
           </div>
-          <div className="flex min-w-px flex-[1_0_0] flex-col items-start">
+          <div className="flex w-full min-w-px flex-[1_0_0] flex-col items-start">
             <Input type="email" placeholder="example@example.com" />
           </div>
         </div>

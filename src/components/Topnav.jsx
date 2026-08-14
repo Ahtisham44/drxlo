@@ -10,7 +10,7 @@ export default function Topnav({ menuOpen = false, onToggleMenu }) {
   return (
     <div
       data-name="Topnav"
-      className="sticky top-0 z-50 flex w-full items-start justify-between overflow-clip px-[48px] py-[32px]"
+      className="sticky top-0 z-50 flex w-full items-start justify-between overflow-clip px-6 sm:px-12 py-6 sm:py-8"
     >
       <GlassSurface width="auto" height="auto" borderRadius={99} backgroundOpacity={0.06} theme={theme}>
         <a href="#home" className="flex items-center justify-center px-[16px] py-[8px]">

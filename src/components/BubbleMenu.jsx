@@ -80,8 +80,6 @@ export default function BubbleMenu({
 
     if (!overlay || !bubbles.length) return
 
-    const isDesktop = window.innerWidth >= 900
-
     if (open) {
       gsap.set(overlay, { display: 'flex' })
       gsap.killTweensOf([...bubbles, ...labels])
@@ -90,7 +88,7 @@ export default function BubbleMenu({
         const item = menuItems[i]
         gsap.set(bubble, {
           scale: 0,
-          rotation: isDesktop ? (item?.rotation ?? 0) : 0,
+          rotation: item?.rotation ?? 0,
           transformOrigin: '50% 50%',
         })
       })
@@ -142,13 +140,11 @@ export default function BubbleMenu({
     const handleResize = () => {
       if (!open) return
       const bubbles = bubblesRef.current.filter(Boolean)
-      const isDesktop = window.innerWidth >= 900
 
       bubbles.forEach((bubble, i) => {
         const item = menuItems[i]
         if (bubble && item) {
-          const rotation = isDesktop ? (item.rotation ?? 0) : 0
-          gsap.set(bubble, { rotation })
+          gsap.set(bubble, { rotation: item.rotation ?? 0 })
         }
       })
     }

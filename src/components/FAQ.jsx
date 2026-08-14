@@ -37,7 +37,7 @@ export default function FAQ() {
   return (
     <section
       data-name="Section - FAQ"
-      className="flex w-full shrink-0 flex-col items-start overflow-x-clip bg-white px-[64px] py-[96px]"
+      className="flex w-full shrink-0 flex-col items-start overflow-x-clip bg-white px-4 sm:px-8 md:px-[64px] py-16 sm:py-24 md:py-[96px]"
     >
       <Accordion type="multiple" className="w-full">
         {ITEMS.map((item, i) => (
@@ -47,13 +47,13 @@ export default function FAQ() {
             className="not-last:border-b border-paper-light-3"
           >
             <AccordionTrigger className="[&>span]:ml-auto">
-              <p className="font-syne text-[32px] font-medium leading-[1.3] tracking-[-1.2px] text-paper-dark whitespace-nowrap">
+              <p className="font-syne text-lg sm:text-2xl md:text-[32px] font-medium leading-[1.3] tracking-[-1.2px] text-paper-dark">
                 {item.question}
               </p>
             </AccordionTrigger>
             {item.answer ? (
               <AccordionContent>
-                <p className="font-geist w-[1134px] text-[20px] font-light leading-[1.5] text-[rgba(0,0,0,0.6)]">
+                <p className="font-geist w-full max-w-[1134px] text-base sm:text-lg md:text-[20px] font-light leading-[1.5] text-[rgba(0,0,0,0.6)]">
                   {item.answer}
                 </p>
               </AccordionContent>

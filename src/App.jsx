@@ -133,30 +133,30 @@ function ProblemSlide({ progress, index, count, item }) {
       className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[1200px] px-4 text-center"
     >
       {item.type === "pair" && (
-        <div className="flex flex-col items-center gap-[0.25px] pb-[1.5px] whitespace-nowrap">
-          <p className="font-instrument text-[52px] text-drx-accent tracking-[-1px] leading-[1.3]">
+        <div className="flex flex-col items-center gap-[0.25px] pb-[1.5px] whitespace-normal">
+          <p className="font-instrument text-3xl sm:text-4xl md:text-[52px] text-drx-accent tracking-[-1px] leading-[1.3]">
             {item.serif}
           </p>
-          <p className="font-syne text-[39px] font-bold leading-none tracking-[-2px] text-paper-dark">
+          <p className="font-syne text-2xl sm:text-3xl md:text-[39px] font-bold leading-none tracking-[-2px] text-paper-dark">
             {item.syne}
           </p>
         </div>
       )}
       {item.type === "syneLines" && (
-        <div className="flex flex-col justify-center font-syne text-[39px] font-bold leading-none tracking-[-2px] text-paper-dark">
+        <div className="flex flex-col justify-center font-syne text-2xl sm:text-3xl md:text-[39px] font-bold leading-none tracking-[-2px] text-paper-dark">
           {item.lines.map((line, i) => (
             <p key={i} className="leading-none">{line}</p>
           ))}
         </div>
       )}
       {item.type === "soundFamiliar" && (
-        <p className="font-syne text-[104px] font-extrabold leading-none tracking-[-3.5px] text-paper-dark">
+        <p className="font-syne text-4xl sm:text-6xl md:text-[104px] font-extrabold leading-none tracking-[-2px] sm:tracking-[-3.5px] text-paper-dark">
           Sound familiar? <br /> you&apos;re not alone.
         </p>
       )}
       {item.type === "cta" && (
-        <p className="font-syne text-[104px] font-extrabold leading-none tracking-[-3.5px]">
-          <span className="font-instrument text-[84px] italic font-light tracking-[-3.5px] text-paper-dark">If you&apos;re experiencing any of these,</span>{" "}
+        <p className="font-syne text-4xl sm:text-6xl md:text-[104px] font-extrabold leading-none tracking-[-2px] sm:tracking-[-3.5px]">
+          <span className="font-instrument text-3xl sm:text-5xl md:text-[84px] italic font-light tracking-[-2px] sm:tracking-[-3.5px] text-paper-dark">If you&apos;re experiencing any of these,</span>{" "}
           <br />
           <span className="text-drx-accent">Drxlo</span>{" "}
           <span className="text-paper-dark">already solved it.</span>
@@ -166,14 +166,182 @@ function ProblemSlide({ progress, index, count, item }) {
   )
 }
 
+// Design canvas is 1200 x 1180. The card stack is drawn at 1:1 and scaled
+// proportionally to the container, while testimonial copy stays in an unscaled
+// overlay so it remains readable on every viewport.
+function StoriesCollage({ quote }) {
+  const wrapRef = useRef(null)
+  const [scale, setScale] = useState(1)
+
+  useEffect(() => {
+    const update = () => {
+      setScale((wrapRef.current?.clientWidth ?? 1200) / 1200)
+    }
+    update()
+    window.addEventListener("resize", update)
+    return () => window.removeEventListener("resize", update)
+  }, [])
+
+  const textBlock = ({ left, top, width, nameSize, companySize, quoteSize }) => (
+    <div
+      className="absolute -translate-x-1/2 -translate-y-1/2"
+      style={{ left: `${left}%`, top: `${top}%`, width: `${width}%` }}
+    >
+      <div className="flex shrink-0 flex-col items-start">
+        <p className="font-syne font-bold leading-[1.3] tracking-[-1px] text-white" style={{ fontSize: nameSize }}>
+          Emily Thompson
+        </p>
+        <p className="font-geist leading-[1.5] text-[rgba(255,255,255,0.5)]" style={{ fontSize: companySize }}>
+          BrandLite GmbH
+        </p>
+      </div>
+      <p className="mt-2 font-geist font-light leading-[1.5] text-paper-light" style={{ fontSize: quoteSize }}>
+        {quote}
+      </p>
+    </div>
+  )
+
+  return (
+    <div ref={wrapRef} className="relative mx-auto w-full max-w-[1200px] overflow-hidden">
+      <div className="relative aspect-[1200/1180] w-full">
+        <div
+          className="absolute left-0 top-0"
+          style={{
+            width: 1200,
+            height: 1180,
+            transform: `scale(${scale})`,
+            transformOrigin: "top left",
+          }}
+        >
+          <div
+            className="absolute flex shrink-0 flex-col items-start overflow-clip rounded-[44.262px] border-[5.533px] border-[rgba(255,255,255,0.1)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.5)]"
+            style={{ left: 270.85, top: 371.19, width: 679.145 }}
+          >
+            <div className="relative h-[589.929px] w-[687.444px] shrink-0 rounded-[11.065px]">
+              <img
+                alt=""
+                src={IMG_TEST_SMALL}
+                loading="lazy"
+                decoding="async"
+                className="pointer-events-none absolute inset-0 size-full max-w-none rounded-[11.065px] object-cover"
+              />
+            </div>
+          </div>
+
+          <div
+            className="absolute flex shrink-0 flex-col items-start overflow-clip rounded-[54.671px] border-[6.834px] border-[rgba(255,255,255,0.1)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.5)]"
+            style={{ left: 303, top: 301.82, width: 838.855 }}
+          >
+            <div className="relative h-[728.659px] w-[849.106px] shrink-0 rounded-[13.668px]">
+              <img
+                alt=""
+                src={IMG_TEST_MID_A}
+                loading="lazy"
+                decoding="async"
+                className="pointer-events-none absolute inset-0 size-full max-w-none rounded-[13.668px] object-cover"
+              />
+            </div>
+          </div>
+
+          <div
+            className="absolute flex shrink-0 flex-col items-start overflow-clip rounded-[54.671px] border-[6.834px] border-[rgba(255,255,255,0.1)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.5)]"
+            style={{ left: 510.15, top: 301.82, width: 838.855 }}
+          >
+            <div className="relative h-[728.659px] w-[849.106px] shrink-0 rounded-[13.668px]">
+              <img
+                alt=""
+                src={IMG_TEST_MID_B}
+                loading="lazy"
+                decoding="async"
+                className="pointer-events-none absolute inset-0 size-full max-w-none rounded-[13.668px] object-cover"
+              />
+            </div>
+          </div>
+
+          <div
+            className="absolute flex shrink-0 flex-col items-start overflow-clip rounded-[64px] border-8 border-[rgba(255,255,255,0.1)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.5)]"
+            style={{ left: 335, top: 239.65, width: 982 }}
+          >
+            <div className="relative h-[853px] w-[994px] shrink-0 rounded-[16px]">
+              <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[16px]">
+                <img
+                  alt=""
+                  src={IMG_TEST_MAIN}
+                  loading="lazy"
+                  decoding="async"
+                  className="absolute left-0 top-[-39.15%] h-[205.27%] w-full max-w-none"
+                />
+              </div>
+            </div>
+            <div className="absolute bottom-[7px] left-[7px] h-[297px] w-[968px]" data-name="Liquid Glass - Regular - Large">
+              <div
+                className="absolute inset-0 rounded-[66px] opacity-67 shadow-[0px_8px_40px_0px_rgba(0,0,0,0.12)]"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.06) 100%), linear-gradient(90deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.4) 100%)",
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {textBlock({
+          left: 57.08,
+          top: 79.55,
+          width: 49.3,
+          nameSize: "clamp(18px, 2.6vw, 32px)",
+          companySize: "clamp(11px, 1.3vw, 16px)",
+          quoteSize: "clamp(13px, 1.7vw, 20px)",
+        })}
+        {textBlock({
+          left: 50.2,
+          top: 76.2,
+          width: 42.1,
+          nameSize: "clamp(16px, 2.3vw, 27px)",
+          companySize: "clamp(10px, 1.2vw, 13.7px)",
+          quoteSize: "clamp(12px, 1.5vw, 17px)",
+        })}
+        {textBlock({
+          left: 67.4,
+          top: 76.2,
+          width: 42.1,
+          nameSize: "clamp(16px, 2.3vw, 27px)",
+          companySize: "clamp(10px, 1.2vw, 13.7px)",
+          quoteSize: "clamp(12px, 1.5vw, 17px)",
+        })}
+        {textBlock({
+          left: 42.74,
+          top: 72.4,
+          width: 34.1,
+          nameSize: "clamp(14px, 1.9vw, 22px)",
+          companySize: "clamp(9px, 1vw, 11px)",
+          quoteSize: "clamp(11px, 1.25vw, 13.8px)",
+        })}
+      </div>
+    </div>
+  )
+}
+
 function App() {
   const problemsRef = useRef(null)
   const bgRef = useRef(null)
   const scrollYProgress = useMotionValue(0)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [heroCard, setHeroCard] = useState({ width: 1200, height: 800 })
   const lenis = useLenis()
   useScrollBackground(bgRef)
   useSectionFade()
+
+  useEffect(() => {
+    const update = () => {
+      const vw = window.innerWidth
+      const width = Math.min(1200, vw * 0.92)
+      setHeroCard({ width, height: Math.min(800, width * 0.6667) })
+    }
+    update()
+    window.addEventListener("resize", update)
+    return () => window.removeEventListener("resize", update)
+  }, [])
 
   useEffect(() => {
     if (!lenis) return
@@ -225,14 +393,14 @@ function App() {
       <section
         id="home"
         data-name="Section - HERO - Marquee Hero macrostructure"
-        className="relative flex w-full shrink-0 flex-col items-start overflow-clip px-16 gap-96"
+        className="relative flex w-full shrink-0 flex-col items-start overflow-clip px-4 sm:px-8 md:px-16 gap-24 sm:gap-48 md:gap-96"
       >
         <div className="absolute left-[40%] top-[40%]">
           <CardSwap
-            width={1200}
-            height={800}            
-            cardDistance={65}
-            verticalDistance={120}
+            width={heroCard.width}
+            height={heroCard.height}
+            cardDistance={65 * (heroCard.width / 1200)}
+            verticalDistance={120 * (heroCard.width / 1200)}
             delay={3000}
             pauseOnHover={false}
             skewAmount={6}
@@ -247,18 +415,18 @@ function App() {
         </div>
 
         <div className="relative flex w-full shrink-0 flex-col items-center pt-10">
-          <div className="relative flex shrink-0 flex-col items-center gap-[0.25px] pb-[1.5px] text-center tracking-[-3.5px] whitespace-nowrap">
-            <div className="flex shrink-0 flex-col justify-center font-syne text-[104px] font-extrabold text-[#e5e8ec]">
+          <div className="relative flex shrink-0 flex-col items-center gap-[0.25px] pb-[1.5px] text-center tracking-[-2px] sm:tracking-[-3.5px] whitespace-normal">
+            <div className="flex shrink-0 flex-col justify-center font-syne text-5xl sm:text-7xl md:text-[104px] font-extrabold text-[#e5e8ec]">
               <p className="mb-0 leading-none">We design</p>
               <p className="leading-none">products that</p>
             </div>
-            <div className="flex shrink-0 flex-col justify-center font-instrument text-[120px] italic text-drx-lime">
+            <div className="flex shrink-0 flex-col justify-center font-instrument text-6xl sm:text-8xl md:text-[120px] italic text-drx-lime">
               <TextSwap />
             </div>
           </div>
 
-          <div className="relative flex w-full shrink-0 items-center justify-center pt-40">
-            <div className="flex shrink-0 items-start gap-[16px]">
+          <div className="relative flex w-full shrink-0 items-center justify-center pt-16 sm:pt-24 md:pt-40">
+            <div className="flex w-full max-w-xl shrink-0 flex-col items-center justify-center gap-4 sm:flex-row sm:items-start sm:gap-[16px]">
               <GlassSurface width="auto" height="auto" borderRadius={99} backgroundOpacity={0.06}>
                 <Button variant="default" asChild>
                   <a href="mailto:hello@drxlo.com?subject=Free%20Audit%20Request">Book Free Audit</a>
@@ -281,8 +449,8 @@ function App() {
         </div>
 
 
-        <div className="relative flex items-end justify-end align-bottom">
-          <div className="flex shrink-0 flex-col font-instrument text-[52px] text-white tracking-[-1px] whitespace-nowrap">
+        <div className="relative flex w-full items-end justify-end align-bottom">
+          <div className="flex shrink-0 flex-col font-instrument text-2xl sm:text-4xl md:text-[52px] text-white tracking-[-1px] whitespace-normal">
             {STATS.map((stat, i) => (
               <p key={stat} className={`leading-[1.3] ${i === STATS.length - 1 ? "" : "mb-0"}`}>
                 {stat}
@@ -292,12 +460,12 @@ function App() {
         </div>
 
         {/* ===== Trusted by partners ===== */}
-        <div className="relative flex-row shrink-0 items-left">
-          <div className="relative shrink-0 text-paper-light whitespace-nowrap">
-            <p className="font-syne text-[49px] font-bold leading-none tracking-[-3px]">Trusted by</p>
-            <p className="font-syne text-[84px] font-extrabold leading-none tracking-[-3.5px]">28 partners</p>
+        <div className="relative flex w-full shrink-0 flex-col items-left">
+          <div className="relative shrink-0 text-paper-light">
+            <p className="font-syne text-2xl sm:text-4xl md:text-[49px] font-bold leading-none tracking-[-2px] sm:tracking-[-3px]">Trusted by</p>
+            <p className="font-syne text-4xl sm:text-6xl md:text-[84px] font-extrabold leading-none tracking-[-2px] sm:tracking-[-3.5px]">28 partners</p>
           </div>
-          <div className="relative h-[273.348px] w-[1758px] shrink-0">
+          <div className="relative aspect-[1758/273] w-full shrink-0 overflow-hidden">
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
               <img
                 alt="Partners screenshot"
@@ -316,7 +484,7 @@ function App() {
       <section
         data-name="Section - Problems"
         ref={problemsRef}
-        className="relative w-full overflow-clip px-[64px]"
+        className="relative w-full overflow-clip px-4 sm:px-8 md:px-16"
         style={{ height: `${ITEMS.length * 100}vh` }}
       >
         <div className="sticky top-0 h-screen flex items-center justify-center w-full">
@@ -342,15 +510,15 @@ function App() {
       <section
         id="why"
         data-name="Section - Why"
-        className="flex w-full shrink-0 flex-col items-start gap-48 overflow-clip px-[64px] py-[96px]"
+        className="flex w-full shrink-0 flex-col items-start gap-16 sm:gap-24 md:gap-48 overflow-clip px-4 sm:px-8 md:px-[64px] py-16 sm:py-24 md:py-[96px]"
       >
-        <div className="relative shrink-0 text-[84px] tracking-[-3.5px] whitespace-nowrap">
+        <div className="relative shrink-0 text-5xl sm:text-6xl md:text-[84px] tracking-[-2px] sm:tracking-[-3.5px] whitespace-normal">
           <p className="font-instrument italic leading-none text-paper-dark">What makes</p>
           <p className="font-syne font-extrabold leading-none text-white">Drxlo Unique</p>
         </div>
 
-        <div className="relative grid h-auto w-full shrink-0 grid-cols-[repeat(auto-fit,minmax(280px,1fr))] grid-rows-[repeat(2,minmax(0,1fr))] gap-x-[8px] gap-y-[8px] rounded-2xl">
-          <div className="relative col-[1/span_2] row-[1/span_2] flex shrink-0 flex-col items-start gap-[32px] self-stretch justify-self-stretch overflow-clip rounded-[24px] p-[48px]">
+        <div className="relative grid h-auto w-full shrink-0 grid-cols-1 md:grid-cols-4 gap-2 rounded-2xl">
+          <div className="relative col-span-1 md:col-[1/span_2] md:row-[1/span_2] flex min-h-[440px] shrink-0 flex-col items-start gap-[32px] self-stretch justify-self-stretch overflow-clip rounded-[24px] p-6 sm:p-10 md:p-[48px]">
             <div className="absolute inset-[-0.35px_0_0.35px_0] rounded-[56px]">
               <div className="absolute inset-0 rounded-[56px] bg-[#ccc] mix-blend-color-burn opacity-67" />
               <div
@@ -361,22 +529,22 @@ function App() {
                 }}
               />
             </div>
-            <p className="relative shrink-0 font-mont text-[40px] font-semibold leading-[1.3] tracking-[-0.8px] text-white">
+            <p className="relative shrink-0 font-mont text-2xl sm:text-3xl md:text-[40px] font-semibold leading-[1.3] tracking-[-0.8px] text-white">
               Evaluate your expenses against possible savings.
             </p>
-            <div className="absolute left-1/2 top-[427.65px] h-[384px] w-[516px] -translate-x-1/2 shadow-[0px_0px_40px_0px_rgba(0,0,0,0.4)]">
-              <img alt="" src={IMG_WHY_52} loading="lazy" decoding="async" className="pointer-events-none absolute inset-0 size-full max-w-none object-cover" />
+            <div className="relative mt-auto aspect-[516/384] w-[min(100%,516px)] self-center shadow-[0px_0px_40px_0px_rgba(0,0,0,0.4)]">
+              <img alt="" src={IMG_WHY_52} loading="lazy" decoding="async" className="pointer-events-none absolute inset-0 size-full object-cover" />
             </div>
           </div>
 
-          <div className="relative col-3 row-1 flex shrink-0 flex-col items-start justify-center self-stretch justify-self-stretch overflow-clip rounded-[56px] bg-white p-[32px]">
-            <p className="relative shrink-0 w-[238px] font-mont text-[40px] leading-none tracking-[-2.4px] text-paper-dark uppercase whitespace-pre-wrap">
+          <div className="relative col-span-1 md:col-3 md:row-1 flex min-h-[180px] shrink-0 flex-col items-start justify-center self-stretch justify-self-stretch overflow-clip rounded-[24px] sm:rounded-[56px] bg-white p-6 sm:p-8 md:p-[32px]">
+            <p className="relative shrink-0 w-auto font-mont text-3xl sm:text-4xl md:w-[238px] md:text-[40px] leading-none tracking-[-2.4px] text-paper-dark uppercase whitespace-pre-wrap">
               <span className="leading-[1.3]">Your Finance, </span>
               <span className="leading-[1.3]">Our Headache</span>
             </p>
           </div>
 
-          <div className="relative col-4 row-1 flex shrink-0 flex-col items-start justify-between self-stretch justify-self-stretch overflow-clip rounded-[24px] p-[32px]">
+          <div className="relative col-span-1 md:col-4 md:row-1 flex min-h-[220px] shrink-0 flex-col items-start justify-between self-stretch justify-self-stretch overflow-clip rounded-[24px] p-6 sm:p-8 md:p-[32px]">
             <div className="absolute inset-[-0.35px_0_0.35px_0] rounded-[56px]">
               <div className="absolute inset-0 rounded-[56px] bg-[#ccc] mix-blend-color-burn opacity-67" />
               <div
@@ -390,12 +558,12 @@ function App() {
             <div className="relative size-[96px] overflow-clip">
               <img alt="" src={IMG_FINGER} className="block size-full max-w-none" />
             </div>
-            <p className="relative shrink-0 font-mont text-[32px] font-semibold leading-[1.3] tracking-[-0.64px] text-white">
+            <p className="relative shrink-0 font-mont text-2xl sm:text-3xl md:text-[32px] font-semibold leading-[1.3] tracking-[-0.64px] text-white">
               Verification on the go
             </p>
           </div>
 
-          <div className="relative col-[3/span_2] row-2 flex shrink-0 flex-col items-start gap-[32px] justify-center self-stretch justify-self-stretch overflow-clip rounded-[24px] p-[32px]">
+          <div className="relative col-span-1 md:col-[3/span_2] md:row-2 flex min-h-[280px] shrink-0 flex-col items-start gap-[32px] justify-center self-stretch justify-self-stretch overflow-clip rounded-[24px] p-6 sm:p-8 md:p-[32px]">
             <div className="absolute inset-[-0.35px_0_0.35px_0] rounded-[56px]">
               <div className="absolute inset-0 rounded-[56px] bg-[#ccc] mix-blend-color-burn opacity-67" />
               <div
@@ -406,13 +574,13 @@ function App() {
                 }}
               />
             </div>
-            <p className="relative shrink-0 font-mont text-[32px] font-semibold leading-none tracking-[-0.64px] text-white whitespace-nowrap">
-              <span className="leading-[1.3] whitespace-pre">Collective </span>
-              <span className="leading-[1.3] whitespace-pre">expenses</span>
-              <span className="leading-[1.3] whitespace-pre">under 1 roof</span>
+            <p className="relative shrink-0 font-mont text-2xl sm:text-3xl md:text-[32px] font-semibold leading-none tracking-[-0.64px] text-white whitespace-normal">
+              <span className="leading-[1.3]">Collective </span>
+              <span className="leading-[1.3]">expenses</span>
+              <span className="leading-[1.3]">under 1 roof</span>
             </p>
-            <div className="absolute left-[calc(50%+186.5px)] top-[calc(50%+1px)] h-[217px] w-[401px] -translate-x-1/2 -translate-y-1/2 shadow-[0px_0px_40px_0px_rgba(0,0,0,0.4)]">
-              <img alt="" src={IMG_WHY_53} loading="lazy" decoding="async" className="pointer-events-none absolute inset-0 size-full max-w-none object-cover" />
+            <div className="relative mt-auto aspect-[401/217] w-[min(70%,401px)] self-end shadow-[0px_0px_40px_0px_rgba(0,0,0,0.4)]">
+              <img alt="" src={IMG_WHY_53} loading="lazy" decoding="async" className="pointer-events-none absolute inset-0 size-full object-cover" />
             </div>
           </div>
         </div>
@@ -422,75 +590,14 @@ function App() {
       <section
         id="stories"
         data-name="Section - Testimonials"
-        className="relative flex h-[1180px] w-full shrink-0 flex-col items-center gap-[120px] overflow-clip px-[64px] pb-[120px] pt-[96px]"
+        className="relative flex w-full shrink-0 flex-col items-start gap-12 sm:gap-20 md:gap-[120px] overflow-clip px-4 sm:px-8 md:px-[64px] pb-16 sm:pb-24 md:pb-[120px] pt-16 sm:pt-24 md:pt-[96px]"
       >
-        <div className="absolute left-[270.85px] top-[371.19px] flex w-[679.145px] shrink-0 flex-col items-start gap-[82.991px] overflow-clip rounded-[44.262px] border-[5.533px] border-[rgba(255,255,255,0.1)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.5)]">
-          <div className="relative h-[589.929px] w-[687.444px] shrink-0 rounded-[11.065px]">
-            <img alt="" src={IMG_TEST_SMALL} loading="lazy" decoding="async" className="pointer-events-none absolute inset-0 size-full max-w-none rounded-[11.065px] object-cover" />
-          </div>
-          <div className="absolute left-[calc(50%-97.51px)] top-[calc(50%+188.46px)] flex w-[409.423px] max-w-[553.2749633789062px] -translate-x-1/2 -translate-y-1/2 flex-col items-start gap-[27.664px]">
-            <div className="flex shrink-0 flex-col items-start">
-              <p className="shrink-0 font-syne text-[22.131px] font-bold leading-[1.3] tracking-[-1.3832px] text-center text-white whitespace-nowrap">Emily Thompson</p>
-              <p className="shrink-0 font-geist text-[11.065px] leading-[1.5] text-[rgba(255,255,255,0.4)]">BrandLite GmbH</p>
-            </div>
-            <p className="shrink-0 font-geist text-[13.832px] font-light leading-[1.5] text-paper-light">{TESTIMONIAL_QUOTE}</p>
-          </div>
-        </div>
-
-        <div className="absolute left-[303px] top-[301.82px] flex w-[838.855px] shrink-0 flex-col items-start gap-[102.508px] overflow-clip rounded-[54.671px] border-[6.834px] border-[rgba(255,255,255,0.1)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.5)]">
-          <div className="relative h-[728.659px] w-[849.106px] shrink-0 rounded-[13.668px]">
-            <img alt="" src={IMG_TEST_MID_A} loading="lazy" decoding="async" className="pointer-events-none absolute inset-0 size-full max-w-none rounded-[13.668px] object-cover" />
-          </div>
-          <div className="absolute left-[calc(50%-120.45px)] top-[calc(50%+232.78px)] flex w-[505.705px] max-w-[683.3848876953125px] -translate-x-1/2 -translate-y-1/2 flex-col items-start gap-[34.169px]">
-            <div className="flex shrink-0 flex-col items-start">
-              <p className="shrink-0 font-syne text-[27.335px] font-bold leading-[1.3] tracking-[-1.7085px] text-center text-white whitespace-nowrap">Emily Thompson</p>
-              <p className="shrink-0 font-geist text-[13.668px] leading-[1.5] text-[rgba(255,255,255,0.4)]">BrandLite GmbH</p>
-            </div>
-            <p className="shrink-0 font-geist text-[17.085px] font-light leading-[1.5] text-paper-light">{TESTIMONIAL_QUOTE}</p>
-          </div>
-        </div>
-
-        <div className="absolute left-[510.15px] top-[301.82px] flex w-[838.855px] shrink-0 flex-col items-start gap-[102.508px] overflow-clip rounded-[54.671px] border-[6.834px] border-[rgba(255,255,255,0.1)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.5)]">
-          <div className="relative h-[728.659px] w-[849.106px] shrink-0 rounded-[13.668px]">
-            <img alt="" src={IMG_TEST_MID_B} loading="lazy" decoding="async" className="pointer-events-none absolute inset-0 size-full max-w-none rounded-[13.668px] object-cover" />
-          </div>
-          <div className="absolute left-[calc(50%-120.45px)] top-[calc(50%+232.78px)] flex w-[505.705px] max-w-[683.3848876953125px] -translate-x-1/2 -translate-y-1/2 flex-col items-start gap-[34.169px]">
-            <div className="flex shrink-0 flex-col items-start">
-              <p className="shrink-0 font-syne text-[27.335px] font-bold leading-[1.3] tracking-[-1.7085px] text-center text-white whitespace-nowrap">Emily Thompson</p>
-              <p className="shrink-0 font-geist text-[13.668px] leading-[1.5] text-[rgba(255,255,255,0.4)]">BrandLite GmbH</p>
-            </div>
-            <p className="shrink-0 font-geist text-[17.085px] font-light leading-[1.5] text-paper-light">{TESTIMONIAL_QUOTE}</p>
-          </div>
-        </div>
-
-        <div className="relative flex w-full shrink-0 flex-col items-start text-[84px] tracking-[-3.5px] text-paper-light whitespace-nowrap">
+        <div className="relative flex w-full shrink-0 flex-col items-start text-5xl sm:text-6xl md:text-[84px] tracking-[-2px] sm:tracking-[-3.5px] text-paper-light whitespace-normal">
           <p className="font-syne font-extrabold leading-none">Stories</p>
           <p className="font-instrument italic leading-none">from our partners</p>
         </div>
 
-        <div className="absolute left-[335px] top-[239.65px] flex w-[982px] shrink-0 flex-col items-start gap-[120px] overflow-clip rounded-[64px] border-8 border-[rgba(255,255,255,0.1)] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.5)]">
-          <div className="relative h-[853px] w-[994px] shrink-0 rounded-[16px]">
-            <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[16px]">
-              <img alt="" src={IMG_TEST_MAIN} loading="lazy" decoding="async" className="absolute left-0 top-[-39.15%] h-[205.27%] w-full max-w-none" />
-            </div>
-          </div>
-          <div className="absolute bottom-[7px] left-[7px] h-[297px] w-[968px]" data-name="Liquid Glass - Regular - Large">
-            <div
-              className="absolute inset-0 rounded-[66px] opacity-67 shadow-[0px_8px_40px_0px_rgba(0,0,0,0.12)]"
-              style={{
-                backgroundImage:
-                  "linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.06) 100%), linear-gradient(90deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.4) 100%)",
-              }}
-            />
-          </div>
-          <div className="absolute left-[calc(50%-141px)] top-[calc(50%+272.5px)] flex w-[592px] max-w-[800px] -translate-x-1/2 -translate-y-1/2 flex-col items-start gap-[40px]">
-            <div className="flex shrink-0 flex-col items-start">
-              <p className="shrink-0 font-syne text-[32px] font-bold leading-[1.3] tracking-[-2px] text-center text-white whitespace-nowrap">Emily Thompson</p>
-              <p className="shrink-0 font-geist text-[16px] leading-[1.5] text-[rgba(255,255,255,0.4)]">BrandLite GmbH</p>
-            </div>
-            <p className="shrink-0 font-geist text-[20px] font-light leading-[1.5] text-paper-light">{TESTIMONIAL_QUOTE}</p>
-          </div>
-        </div>
+        <StoriesCollage quote={TESTIMONIAL_QUOTE} />
       </section>
 
       {/* ===== FAQ ===== */}

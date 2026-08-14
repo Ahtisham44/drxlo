@@ -21,15 +21,15 @@ export default function Footer() {
   return (
     <footer
       data-name="Footer"
-      className="flex w-full shrink-0 flex-col items-center gap-[120px] overflow-clip bg-paper-dark px-[64px] pt-[96px] whitespace-nowrap text-paper-light"
+      className="flex w-full shrink-0 flex-col items-center gap-16 sm:gap-24 md:gap-[120px] overflow-clip bg-paper-dark px-4 sm:px-8 md:px-[64px] pt-16 sm:pt-24 md:pt-[96px] text-paper-light"
     >
-      <div className="flex items-start gap-[120px]">
+      <div className="grid w-full grid-cols-2 gap-x-8 gap-y-12 lg:grid-cols-4 lg:gap-x-[120px]">
         {COLUMNS.map((col) => (
           <div key={col.title} className="flex flex-col items-start gap-[40px]">
-            <p className="font-instrument text-[32px] italic leading-[1.3] tracking-[-1px]">
+            <p className="font-instrument text-2xl sm:text-3xl md:text-[32px] italic leading-[1.3] tracking-[-1px]">
               {col.title}
             </p>
-            <div className="flex flex-col items-start gap-[8px] font-geist text-[20px] font-light leading-[1.5]">
+            <div className="flex flex-col items-start gap-[8px] font-geist text-base sm:text-lg md:text-[20px] font-light leading-[1.5]">
               {col.links.map((link) => (
                 <p key={link}>{link}</p>
               ))}

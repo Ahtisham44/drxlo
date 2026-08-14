@@ -108,7 +108,7 @@ function WorkCard({ item }) {
       <img alt="" src={item.image} className="absolute inset-0 size-full object-cover" />
       <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/40 to-transparent" />
       <div className="absolute inset-0 flex items-start justify-between p-[clamp(24px,3vw,40px)]">
-        <p className="font-syne text-[clamp(28px,3.5vw,56px)] tracking-[-2px] text-white whitespace-nowrap">
+        <p className="font-syne text-[clamp(28px,3.5vw,56px)] tracking-[-2px] text-white">
           <span className="leading-[1.3]">{before}</span>
           {item.highlight && (
             <span className="font-instrument italic leading-[1.3]">{item.highlight}</span>
@@ -116,7 +116,7 @@ function WorkCard({ item }) {
           <span className="leading-[1.3]">{after}</span>
         </p>
         {item.label && (
-          <p className="font-syne text-[clamp(16px,1.6vw,24px)] font-semibold tracking-[0.2em] uppercase text-white/80 whitespace-nowrap">
+          <p className="font-syne text-[clamp(16px,1.6vw,24px)] font-semibold tracking-[0.2em] uppercase text-white/80">
             {item.label}
           </p>
         )}
@@ -155,13 +155,13 @@ export default function Work() {
         </ScrollStack>
       </div>
 
-      <div className="flex flex-col items-center gap-[32px] px-[64px]">
-        <p className="font-syne text-[clamp(32px,4vw,56px)] tracking-[-3px] text-paper-dark whitespace-nowrap">
+      <div className="flex flex-col items-center gap-[32px] px-4 sm:px-8 md:px-[64px]">
+        <p className="font-syne text-[clamp(24px,4vw,56px)] tracking-[-2px] sm:tracking-[-3px] text-paper-dark text-center">
           Not find what you are looking for?
         </p>
-        <div className="flex items-center gap-[32px]">          
-          <p className="font-syne text-[clamp(32px,4vw,56px)] font-extrabold tracking-[-3px] text-paper-dark whitespace-nowrap">
-            Show me{" "}
+        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-[32px]">          
+          <p className="font-syne text-[clamp(24px,4vw,56px)] font-extrabold tracking-[-2px] sm:tracking-[-3px] text-paper-dark flex flex-wrap items-center justify-center gap-2 sm:gap-4">
+            <span>Show me</span>
             <Select
               value={industry}
               onChange={(e) => {
@@ -174,8 +174,8 @@ export default function Work() {
                   {option}
                 </option>
               ))}
-            </Select>{" "}
-            solutions
+            </Select>
+            <span>solutions</span>
           </p>
         </div>
         {hasSelected && (
