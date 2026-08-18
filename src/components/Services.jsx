@@ -73,8 +73,8 @@ export default function Services() {
       ScrollTrigger.create({
         trigger: pinRef.current,
         pin: pinRef.current,
-        start: "top top",
-        end: () => `+=${distanceRef.current}`,
+        start: "top 20%",
+        end: () => `+=${distanceRef.current * 0.8}`,
         scrub: 1,
         pinSpacing: true,
         anticipatePin: 1,
@@ -106,7 +106,7 @@ export default function Services() {
       data-name="Section - Services"
       className="relative w-full"
     >
-      <div className="flex w-full flex-col items-start px-4 sm:px-8 md:px-[64px] pb-[16px] mt-24 sm:mt-48 md:mt-80 font-syne font-extrabold">
+      <div className="flex w-full flex-col items-start px-4 sm:px-8 md:px-[64px] pb-[16px] mt-12 sm:mt-20 md:mt-32 font-syne font-extrabold">
         <div className="relative flex w-full flex-col justify-center text-4xl sm:text-6xl md:text-[104px] leading-none tracking-[-2px] sm:tracking-[-3.5px] text-paper-dark">
           <p className="leading-none">We help you decide</p>
         </div>
@@ -117,7 +117,7 @@ export default function Services() {
         </div>
       </div>
 
-      <div ref={pinRef} className="relative flex h-screen w-full items-start overflow-visible pt-20 sm:pt-40 mb-20">
+      <div ref={pinRef} className="relative flex h-screen w-full items-start overflow-visible pt-10 sm:pt-16 mb-10">
         <div
           ref={trackRef}
           className="relative flex h-full w-max items-start gap-[16px] pl-4 sm:pl-8 md:pl-[64px] pr-4 sm:pr-8 md:pr-[64px] will-change-transform"

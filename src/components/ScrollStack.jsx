@@ -13,12 +13,12 @@ const ScrollStack = ({
   itemDistance = 100,
   itemScale = 0.03,
   itemStackDistance = 30,
-  stackPosition = '20%',
+  stackPosition = '10%',
   scaleEndPosition = '10%',
   baseScale = 0.85,
-  scaleDuration = 1,
+  scaleDuration = 0.9,
   rotationAmount = 0,
-  blurAmount = 2,
+  blurAmount = 0,
   useWindowScroll = false,
   onStackComplete
 }) => {
@@ -73,7 +73,7 @@ const ScrollStack = ({
   const measureLayout = useCallback(() => {
     const stripTranslateY = (element) => {
       const transform = element?.style.transform || '';
-      const match = transform.match(/translate3d\(0px, ([-\d.]+)px/);
+      const match = transform.match(/translate3d\(\s*-?[\d.]+\w*,\s*(-?[\d.]+)px/);
       return match ? parseFloat(match[1]) : 0;
     };
 
@@ -102,48 +102,18 @@ const ScrollStack = ({
     const { offsets, endOffset: endElementTop } = layoutRef.current;
     const pinEnd = endElementTop - containerHeight / 2;
 
-    // First pass: determine which cards are pinned (using static stackPosition for trigger calc)
-    const isPinnedArr = cardsRef.current.map((card, i) => {
-      if (!card) return false;
-      const cardTop = offsets[i];
-      const triggerStart = cardTop - staticStackPositionPx - itemStackDistance * i;
-      return scrollTop >= triggerStart && scrollTop <= endElementTop - containerHeight / 2;
-    });
-
-    const pinnedCount = isPinnedArr.filter(Boolean).length;
-
-    // Dynamic stackPosition: shift upward so fan bottom stays at ~85vh
-    // Estimate fan height: sum of (cardHeight * targetScale) + (pinnedCount-1)*itemStackDistance
-    let fanHeight = 0;
-    if (pinnedCount > 0) {
-      let totalHeight = 0;
-      for (let i = 0; i < cardsRef.current.length; i++) {
-        if (!isPinnedArr[i]) break;
-        const targetScale = baseScale + i * itemScale;
-        // Card layout height is 90vh (810px at 900px viewport)
-        const cardLayoutHeight = containerHeight * 0.9; // 90vh
-        totalHeight += cardLayoutHeight * targetScale;
-      }
-      fanHeight = totalHeight + (pinnedCount - 1) * itemStackDistance;
-    }
-
-    // Target: keep fan bottom at ~85% of viewport
-    const targetBottom = containerHeight * 0.85;
-    const dynamicStackPositionPx = Math.max(
-      containerHeight * 0.06, // floor: 6% from top
-      Math.min(
-        staticStackPositionPx,
-        targetBottom - fanHeight
-      )
-    );
+    // Fixed stackPosition: derived only from the configured `stackPosition` prop.
+    // No per-frame fan-height estimation or clamping — the stack never shifts or
+    // snaps when a new card pins, and this adds zero per-scroll-frame work.
+    const stackPositionPx = staticStackPositionPx;
 
     cardsRef.current.forEach((card, i) => {
       if (!card) return;
 
       const cardTop = offsets[i];
-      const triggerStart = cardTop - dynamicStackPositionPx - itemStackDistance * i;
+      const triggerStart = cardTop - stackPositionPx - itemStackDistance * i;
       const triggerEnd = cardTop - scaleEndPositionPx;
-      const pinStart = cardTop - dynamicStackPositionPx - itemStackDistance * i;
+      const pinStart = cardTop - stackPositionPx - itemStackDistance * i;
 
       const scaleProgress = calculateProgress(scrollTop, triggerStart, triggerEnd);
       const targetScale = baseScale + i * itemScale;
@@ -155,7 +125,7 @@ const ScrollStack = ({
         let topCardIndex = 0;
         for (let j = 0; j < cardsRef.current.length; j++) {
           const jCardTop = offsets[j];
-          const jTriggerStart = jCardTop - dynamicStackPositionPx - itemStackDistance * j;
+          const jTriggerStart = jCardTop - stackPositionPx - itemStackDistance * j;
           if (scrollTop >= jTriggerStart) {
             topCardIndex = j;
           }
@@ -171,9 +141,9 @@ const ScrollStack = ({
       const isPinned = scrollTop >= pinStart && scrollTop <= pinEnd;
 
       if (isPinned) {
-        translateY = scrollTop - cardTop + dynamicStackPositionPx + itemStackDistance * i;
+        translateY = scrollTop - cardTop + stackPositionPx + itemStackDistance * i;
       } else if (scrollTop > pinEnd) {
-        translateY = pinEnd - cardTop + dynamicStackPositionPx + itemStackDistance * i;
+        translateY = pinEnd - cardTop + stackPositionPx + itemStackDistance * i;
       }
 
       // Z-index: approaching in front (z=100), then joins stack when pinned
@@ -325,27 +295,26 @@ const ScrollStack = ({
     updateCardTransforms
   ]);
 
-  // Window-scroll mode: the global Lenis already owns window scroll. Drive card
-  // updates straight off its scroll events (plus a passive native listener as a
-  // fallback) instead of a perpetual requestAnimationFrame polling loop. That
-  // means zero work while the page is idle, and updates are aligned exactly to
-  // the scroll, eliminating the duplicate layout pass that caused jank.
+  // Window-scroll mode: the global Lenis already owns window scroll, so we
+  // drive card updates off its scroll events alone — no duplicate native
+  // listener. The update runs synchronously inside Lenis's own tick
+  // (gsap.ticker), exactly like internal Lenis mode below, so transforms stay
+  // frame-locked with the smooth scroll interpolation — no extra rAF hop.
   useEffect(() => {
     if (!useWindowScroll) return;
 
-    const onScroll = () => updateCardTransforms();
+    const handleScroll = () => updateCardTransforms();
+
     const onResize = () => {
       measureLayout();
       updateCardTransforms();
     };
 
-    lenis?.on('scroll', onScroll);
-    window.addEventListener('scroll', onScroll, { passive: true });
+    lenis?.on('scroll', handleScroll);
     window.addEventListener('resize', onResize);
 
     return () => {
-      lenis?.off('scroll', onScroll);
-      window.removeEventListener('scroll', onScroll);
+      lenis?.off('scroll', handleScroll);
       window.removeEventListener('resize', onResize);
     };
   }, [useWindowScroll, lenis, updateCardTransforms, measureLayout]);

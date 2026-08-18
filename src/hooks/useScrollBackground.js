@@ -49,6 +49,8 @@ export default function useScrollBackground(bgRef) {
           continue
         }
 
+        const isHeroTransition = i === 1
+
         gsap.fromTo(
           bgRef.current,
           { backgroundColor: from },
@@ -58,9 +60,9 @@ export default function useScrollBackground(bgRef) {
             overwrite: "auto",
             immediateRender: false,
             scrollTrigger: {
-              trigger: triggerEl,
-              start: "top 90%",
-              end: "top 30%",
+              trigger: isHeroTransition ? "#home" : triggerEl,
+              start: isHeroTransition ? "bottom bottom" : "top 90%",
+              end: isHeroTransition ? "bottom top" : "top 80%",
               scrub: 1,
               fastScrollEnd: true,
               invalidateOnRefresh: true,
@@ -73,7 +75,16 @@ export default function useScrollBackground(bgRef) {
 
     ScrollTrigger.refresh()
 
+    const observed = []
+    for (const s of SECTION_COLORS) {
+      const el = document.querySelector(s.selector)
+      if (el) observed.push(el)
+    }
+    const ro = new ResizeObserver(() => ScrollTrigger.refresh())
+    observed.forEach((el) => ro.observe(el))
+
     return () => {
+      ro.disconnect()
       lenis.off("scroll", sync)
       ctx.revert()
     }

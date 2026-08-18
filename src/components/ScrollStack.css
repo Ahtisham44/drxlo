@@ -20,8 +20,11 @@
 }
 
 .scroll-stack-inner {
-  /* 18vh top padding: first featured card fills ~90% of the first screen */
-  padding: 18vh 0 60rem;
+  /* 12vh top padding: first featured card fills ~90% of the first screen */
+  /* Bottom padding gives the stacked fan room to scroll out of the viewport
+     after the last card unpins. With no trailing space the fan stops half-visible
+     while the next section scrolls in on top of it. */
+  padding: 12vh 0 calc(100vh);
   min-height: 100vh;
 }
 

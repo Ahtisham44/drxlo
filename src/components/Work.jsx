@@ -1,23 +1,5 @@
-import { useState } from "react"
 import ScrollStack, { ScrollStackItem } from "@/components/ScrollStack"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select } from "@/components/ui/select"
 import { IMG_WORK_1, IMG_WORK_2, IMG_WORK_3, IMG_WORK_4, IMG_WORK_5 } from "@/lib/assets"
-
-const INDUSTRIES = [
-  "Saas",
-  "Finance",
-  "Landing page",
-  "Mobile app",
-  "Dashboard",
-  "B2B",
-  "Health",
-  "Logistics",
-  "Translation",
-  "Analytics",
-  "News & Media",
-]
 
 const GRADIENT_MAGENTA =
   "url(\"data:image/svg+xml;utf8,<svg viewBox='0 0 1166 670.11' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect x='0' y='0' height='100%' width='100%' fill='url(%23grad)' opacity='1'/><defs><radialGradient id='grad' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(-58.3 52.438 -65.628 -46.583 1166 -0.000055532)'><stop stop-color='rgba(240,0,188,1)' offset='0'/><stop stop-color='rgba(184,0,144,1)' offset='0.5'/><stop stop-color='rgba(127,0,100,1)' offset='1'/></radialGradient></defs></svg>\"), linear-gradient(90deg, rgb(5, 8, 10) 0%, rgb(5, 8, 10) 100%)"
@@ -97,10 +79,10 @@ function WorkCard({ item }) {
 
   return (
     <ScrollStackItem
-      itemClassName="overflow-hidden rounded-[40px] border-4 border-[rgba(255,255,255,0.1)] box-border"
+      itemClassName="overflow-hidden rounded-[40px] shadow-[0_0_40px_0_rgba(0,0,0,0.2)]"
       itemStyle={{
-        width: "90vw",
-        height: "90vh",
+        width: "96vw",
+        height: "60rem",
         marginInline: "auto",
       }}
     >
@@ -126,71 +108,24 @@ function WorkCard({ item }) {
 }
 
 export default function Work() {
-  const [industry, setIndustry] = useState("Saas")
-  const [hasSelected, setHasSelected] = useState(false)
-  const [email, setEmail] = useState("")
-
-  const mailtoHref = `mailto:ahtisham@drxlo.com?subject=${encodeURIComponent(
-    `Design request: ${industry} solutions`
-  )}&body=${encodeURIComponent(
-    `Hi Ahtisham,\n\nI'm looking for a ${industry} solution and would like to request a design.\n\nMy email: ${email}`
-  )}`
-
   return (
-<section id="work" data-name="Section - work" className="w-full shrink-0">
+    <section id="work" data-name="Section - work" className="w-full shrink-0">
       <div className="relative w-full">
         <ScrollStack
           useWindowScroll
           className="w-full"
           itemDistance={6}
-          itemStackDistance={40}
-          stackPosition="40%"
-          scaleEndPosition="4%"
+          itemStackDistance={20}
+          stackPosition="5%"
+          scaleEndPosition="0%"
           baseScale={0.8}
           itemScale={0.035}
+          blurAmount={0}
         >
           {WORK_ITEMS.map((item) => (
             <WorkCard key={item.id} item={item} />
           ))}
         </ScrollStack>
-      </div>
-
-      <div className="flex flex-col items-center gap-[32px] px-4 sm:px-8 md:px-[64px]">
-        <p className="font-syne text-[clamp(24px,4vw,56px)] tracking-[-2px] sm:tracking-[-3px] text-paper-dark text-center">
-          Not find what you are looking for?
-        </p>
-        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-[32px]">          
-          <p className="font-syne text-[clamp(24px,4vw,56px)] font-extrabold tracking-[-2px] sm:tracking-[-3px] text-paper-dark flex flex-wrap items-center justify-center gap-2 sm:gap-4">
-            <span>Show me</span>
-            <Select
-              value={industry}
-              onChange={(e) => {
-                setIndustry(e.target.value)
-                setHasSelected(true)
-              }}
-            >
-              {INDUSTRIES.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </Select>
-            <span>solutions</span>
-          </p>
-        </div>
-        {hasSelected && (
-          <div className="flex w-full max-w-[560px] flex-col items-center gap-[16px] pt-[16px]">
-            <Input
-              type="email"
-              placeholder="Your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <Button variant="cta" className="relative" size="default" asChild>
-              <a href={mailtoHref}>Request Design</a>
-            </Button>
-          </div>
-        )}
       </div>
     </section>
   )

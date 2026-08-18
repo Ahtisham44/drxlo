@@ -7,60 +7,95 @@ import {
 
 const ITEMS = [
   {
-    question: "Will my website be optimized for SEO?",
+    question: "Why not hire a freelancer?",
     answer:
-      "Yes! We ensure that every website we build follows SEO best practices, including fast loading speeds, mobile responsiveness, clean code, and proper meta tags. If you need ongoing SEO services, we also offer additional optimization plans to help improve your rankings.",
+      "You get product strategy, design and engineering in one partner.",
   },
   {
-    question: "Do you offer custom design, or do you use templates?",
+    question: "Do you only work with startups?",
     answer:
-      "We create fully custom designs tailored to your brand and business goals. Every project starts from scratch with a unique design system built specifically for your needs.",
+      "No. We also work with growing B2B companies modernising existing products.",
   },
   {
-    question: "Will my website be mobile-friendly and optimized for SEO?",
+    question: "Can you work with our developers?",
     answer:
-      "Absolutely. All our websites are built with a mobile-first approach and fully responsive design, ensuring they look and perform great on every device.",
+      "Yes. We collaborate with internal teams or deliver the complete product.",
   },
   {
-    question: "Can I update my website myself after it's launched?",
+    question: "What industries do you specialise in?",
     answer:
-      "Yes! We build our sites with user-friendly content management systems, so you can easily update text, images, and pages without needing technical knowledge.",
+      "SaaS, AI, Healthcare, Logistics and workflow-heavy B2B software.",
   },
   {
-    question: "What is included in the maintenance and support services?",
+    question: "Do you build MVPs?",
+    answer: "Yes—from discovery to production.",
+  },
+  {
+    question: "How long does a project take?",
+    answer: "Most engagements range from 2–10 weeks depending on scope.",
+  },
+  {
+    question: "What happens after launch?",
     answer:
-      "Our maintenance plans include regular updates, security monitoring, performance optimization, bug fixes, and priority support to keep your site running smoothly.",
+      "We continue improving the product through ongoing partnership if needed.",
+  },
+  {
+    question: "What is your pricing model?",
+    answer:
+      "Every engagement is scoped individually. We work on fixed-price project basis, so you know your costs up front with no surprises.",
+  },
+  {
+    question: "How do we get started?",
+    answer:
+      "Get in touch through the form below and we'll set up a call to understand your goals, then propose a roadmap within days.",
   },
 ]
+
+const COLUMN_BREAK = 5
+
+function FaqColumn({ items, start }) {
+  return (
+    <Accordion type="multiple" className="w-full">
+      {items.map((item, i) => (
+        <AccordionItem
+          key={item.question}
+          value={`item-${start + i}`}
+          className="not-last:border-b border-paper-light-3"
+        >
+          <AccordionTrigger className="[&>span]:ml-auto">
+            <p className="font-syne text-lg sm:text-2xl md:text-[32px] font-medium leading-[1.3] tracking-[-1.2px] text-paper-dark">
+              {item.question}
+            </p>
+          </AccordionTrigger>
+          {item.answer ? (
+            <AccordionContent>
+              <p className="font-geist w-full max-w-[1134px] text-base sm:text-lg md:text-[20px] font-light leading-[1.5] text-[rgba(0,0,0,0.6)]">
+                {item.answer}
+              </p>
+            </AccordionContent>
+          ) : null}
+        </AccordionItem>
+      ))}
+    </Accordion>
+  )
+}
 
 export default function FAQ() {
   return (
     <section
+      id="faq"
       data-name="Section - FAQ"
-      className="flex w-full shrink-0 flex-col items-start overflow-x-clip bg-white px-4 sm:px-8 md:px-[64px] py-16 sm:py-24 md:py-[96px]"
+      className="flex w-full shrink-0 flex-col items-start gap-10 sm:gap-14 md:gap-[64px] overflow-x-clip bg-white px-4 sm:px-8 md:px-[64px] py-12 sm:py-16 md:py-[64px]"
     >
-      <Accordion type="multiple" className="w-full">
-        {ITEMS.map((item, i) => (
-          <AccordionItem
-            key={item.question}
-            value={`item-${i}`}
-            className="not-last:border-b border-paper-light-3"
-          >
-            <AccordionTrigger className="[&>span]:ml-auto">
-              <p className="font-syne text-lg sm:text-2xl md:text-[32px] font-medium leading-[1.3] tracking-[-1.2px] text-paper-dark">
-                {item.question}
-              </p>
-            </AccordionTrigger>
-            {item.answer ? (
-              <AccordionContent>
-                <p className="font-geist w-full max-w-[1134px] text-base sm:text-lg md:text-[20px] font-light leading-[1.5] text-[rgba(0,0,0,0.6)]">
-                  {item.answer}
-                </p>
-              </AccordionContent>
-            ) : null}
-          </AccordionItem>
-        ))}
-      </Accordion>
+      <div className="relative flex w-full shrink-0 flex-col items-start text-5xl sm:text-6xl md:text-[84px] tracking-[-2px] sm:tracking-[-3.5px] text-paper-dark whitespace-normal">
+        <p className="font-syne font-extrabold leading-none">Frequently</p>
+        <p className="font-instrument italic leading-none">asked questions</p>
+      </div>
+
+      <div className="grid w-full grid-cols-1 items-start gap-x-16 lg:grid-cols-2">
+        <FaqColumn items={ITEMS.slice(0, COLUMN_BREAK)} start={0} />
+        <FaqColumn items={ITEMS.slice(COLUMN_BREAK)} start={COLUMN_BREAK} />
+      </div>
     </section>
   )
 }

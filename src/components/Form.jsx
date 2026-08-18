@@ -1,50 +1,85 @@
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import GlassSurface from "@/components/GlassSurface"
 
+const CHALLENGES = [
+  "Our product feels outdated.",
+  "Users drop off during onboarding.",
+  "Conversion isn't improving.",
+  "We need an MVP designed and built.",
+  "We're replacing manual workflows.",
+  "We need a UX audit.",
+  "We want AI integrated into our product.",
+  "Our design and development are constantly out of sync.",
+  "We need a scalable design system.",
+  "We're not sure what to build next.",
+  "Have specific problem in mind? write here",
+]
+
+const CUSTOM_INDEX = CHALLENGES.length - 1
+
 const ROWS = [
   {
     label: "Select what best describes your current challenge.",
-    options: [
-      "Our product feels outdated.",
-      "Users drop off during onboarding.",
-      "Customer support response times are slow.",
-      "Navigation is non-intuitive.",
-      "Visual design lacks modern appeal.",
-    ],
-    checked: 1,
+    options: CHALLENGES,
+    key: "challenges",
+    multi: true,
   },
   {
     label: "Project Budget",
     options: ["Under $5k", "$5k–10k", "$10k–25k", "$25k+"],
+    key: "budget",
     checked: 1,
   },
   {
     label: "Timeline",
     options: ["ASAP", "Within 30 days", "1–3 months", "Just exploring"],
+    key: "timeline",
     checked: 1,
   },
 ]
 
 export default function Form() {
+  const [selected, setSelected] = useState({ budget: 1, timeline: 1 })
+  const [customActive, setCustomActive] = useState(false)
+  const [customValue, setCustomValue] = useState("")
+  const [email, setEmail] = useState("")
+
+  const toggleMulti = (rowKey, i) =>
+    setSelected((prev) => ({ ...prev, [`${rowKey}-${i}`]: !prev[`${rowKey}-${i}`] }))
+
+  const toggleSingle = (rowKey, i) =>
+    setSelected((prev) => ({ ...prev, [rowKey]: prev[rowKey] === i ? null : i }))
+
+  const selectedChallenges = CHALLENGES.filter((_, i) => selected[`challenges-${i}`])
+  const budget = ROWS[1].options[selected.budget]
+  const timeline = ROWS[2].options[selected.timeline]
+
+  const notes = [
+    ...(selectedChallenges.length
+      ? ["Selected challenges:", ...selectedChallenges.map((c) => `- ${c}`)]
+      : []),
+    customValue ? `Specific problem: ${customValue}` : "",
+    `Project Budget: ${budget || "Not selected"}`,
+    `Timeline: ${timeline || "Not selected"}`,
+  ]
+    .filter(Boolean)
+    .join("\n")
+
+  const params = new URLSearchParams()
+  if (email) params.set("email", email)
+  if (notes) params.set("notes", notes)
+
+  const bookingHref = `https://cal.com/ahtisham-jilani${params.toString() ? `?${params.toString()}` : ""}`
+
   return (
     <section
       id="contact"
       data-name="Section - Form"
-      className="relative flex w-full shrink-0 flex-col items-start gap-12 sm:gap-16 md:gap-[120px] overflow-clip bg-white px-4 sm:px-8 md:px-[64px] py-16 sm:py-24 md:py-[96px]"
+      className="relative flex w-full shrink-0 flex-col items-start gap-10 sm:gap-12 md:gap-[64px] overflow-clip bg-white px-4 sm:px-8 md:px-[64px] py-12 sm:py-16 md:py-[64px]"
     >
-      {/* <div className="pointer-events-none absolute bottom-[0.35px] left-1/2 flex h-2/6 w-full -translate-x-1/2 items-center justify-center">
-        
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 0% 50%, rgba(200,240,0,1) 0%, rgba(200,240,0,0) 100%)",
-            }}
-          />
-      </div> */}
-
       <h2 className="relative shrink-0 font-syne text-4xl sm:text-6xl md:text-[104px] font-extrabold leading-none tracking-[-2px] sm:tracking-[-3.5px] text-paper-dark">
         <span className="leading-none">Let's </span>
         <span className="leading-none text-drx-accent">solve</span>
@@ -58,17 +93,67 @@ export default function Form() {
               <p>{row.label}</p>
             </div>
             <div className="flex w-full min-w-px flex-[1_0_0] flex-col items-start">
-              {row.options.map((option, i) => (
-                <div
-                  key={option}
-                  className="flex min-h-[80px] w-full items-center gap-[24px] border-b border-paper-dark py-[16px]"
-                >
-                  <Checkbox defaultChecked={i === row.checked} />
-                  <p className="font-syne text-xl sm:text-2xl md:text-[32px] font-medium leading-[1.3] tracking-[-1.2px] text-paper-dark">
-                    {option}
-                  </p>
-                </div>
-              ))}
+              {row.multi
+                ? row.options.map((option, i) => {
+                    const isCustom = i === CUSTOM_INDEX
+                    const active = isCustom && customActive
+                    const clickable = !isCustom || !active
+                    return (
+                      <div
+                        key={option}
+                        onClick={
+                          isCustom
+                            ? !active
+                              ? () => setCustomActive(true)
+                              : undefined
+                            : () => toggleMulti(row.key, i)
+                        }
+                        className={`flex min-h-[80px] w-full items-center gap-[24px] border-b border-paper-dark py-[16px] ${
+                          clickable ? "cursor-pointer select-none" : ""
+                        }`}
+                      >
+                        {!isCustom && (
+                          <Checkbox
+                            checked={!!selected[`${row.key}-${i}`]}
+                            onCheckedChange={() => toggleMulti(row.key, i)}
+                            className="pointer-events-none"
+                          />
+                        )}
+                        {active ? (
+                          <Input
+                            autoFocus
+                            type="text"
+                            value={customValue}
+                            onChange={(e) => setCustomValue(e.target.value)}
+                            placeholder="Describe your specific problem…"
+                            className="min-h-0 rounded-none border-0 bg-transparent px-0 font-syne text-xl sm:text-2xl md:text-[32px] font-medium leading-[1.3] tracking-[-1.2px] text-paper-dark shadow-none placeholder:text-[#c6c6c6] focus-visible:ring-0"
+                          />
+                        ) : (
+                          <p className={`font-syne text-xl sm:text-2xl md:text-[32px] font-medium leading-[1.3] tracking-[-1.2px] text-paper-dark ${
+                              isCustom && !active ? "underline-offset-8 hover:underline" : ""
+                            }`}>
+                            {option}
+                          </p>
+                        )}
+                      </div>
+                    )
+                  })
+                : row.options.map((option, i) => (
+                    <div
+                      key={option}
+                      onClick={() => toggleSingle(row.key, i)}
+                      className="flex min-h-[80px] w-full cursor-pointer select-none items-center gap-[24px] border-b border-paper-dark py-[16px]"
+                    >
+                      <Checkbox
+                        checked={selected[row.key] === i}
+                        onCheckedChange={() => toggleSingle(row.key, i)}
+                        className="pointer-events-none"
+                      />
+                      <p className="font-syne text-xl sm:text-2xl md:text-[32px] font-medium leading-[1.3] tracking-[-1.2px] text-paper-dark">
+                        {option}
+                      </p>
+                    </div>
+                  ))}
             </div>
           </div>
         ))}
@@ -78,13 +163,18 @@ export default function Form() {
             <p>Your email</p>
           </div>
           <div className="flex w-full min-w-px flex-[1_0_0] flex-col items-start">
-            <Input type="email" placeholder="example@example.com" />
+            <Input
+              type="email"
+              placeholder="example@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
         </div>
 
         <GlassSurface width="100%" height="auto" borderRadius={99} backgroundOpacity={0.06} theme="light" className="p-[0px]">
-          <Button variant="cta" className="relative" size="default">
-            Book Discovery Call
+          <Button variant="cta" className="relative" size="default" asChild>
+            <a href={bookingHref} target="_blank" rel="noopener noreferrer">Book Discovery Call</a>
           </Button>
         </GlassSurface>
       </div>
