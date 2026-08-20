@@ -14,10 +14,18 @@ import Services from "@/components/Services"
 import FAQ from "@/components/FAQ"
 import Form from "@/components/Form"
 import Footer from "@/components/Footer"
+import DrxloBento from "@/components/DrxloBento"
 import CardSwap, { Card } from "@/components/CardSwap"
 import {
   IMG_FINGER,
-  IMG_PARTNERS,
+  IMG_PARTNER_ACFS,
+  IMG_PARTNER_CANVS,
+  IMG_PARTNER_DAILYTELEGRAPH,
+  IMG_PARTNER_DIGITALTALK,
+  IMG_PARTNER_NEWSCORP,
+  IMG_PARTNER_SYDNEYWATER,
+  IMG_PARTNER_TAILOR247,
+  IMG_PARTNER_TKXEL,
   IMG_TEST_MAIN,
   IMG_TEST_MID_A,
   IMG_TEST_MID_B,
@@ -36,8 +44,8 @@ import {
 //  - an imported asset:  IMG_VECTOR_1 (see imports above)
 //  - any external URL:  "https://example.com/image.jpg"
 // Add or remove entries to change the number of cards.
-const HERO_CARDS = ["public/assets/5 Interpretation & Translation Dashboard & Analytics.jpg","public/assets/mobile 01.jpg", "public/assets/2 Dashboard & Analytics.jpg","public/assets/1 Canvs Dashboard & Analytics.jpg",
-  "public/assets/3 Doctor Appointment booking Dashboard.jpg","public/assets/4 Expense Analyser Dashboard & Analytics.jpg"
+const HERO_CARDS = ["public/assets/Frame 4.png","public/assets/Frame 18.png","public/assets/Frame 28.png","public/assets/Frame 39.png","public/assets/Frame 17.png",
+  "public/assets/Frame 7.png","public/assets/Frame 41.png","public/assets/Frame 42.png"
 ]
 
 const STATS = [
@@ -45,6 +53,97 @@ const STATS = [
   "10+ industries",
   "40% admin workload reduction",
   "90% fewer backend requests",
+]
+
+const PARTNERS = [
+  {
+    name: "News Corp Australia",
+    logo: IMG_PARTNER_NEWSCORP,
+    style: {
+      width: 121.18,
+      height: 121.18,
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+    },
+  },
+  {
+    name: "DigitalTalk",
+    logo: IMG_PARTNER_DIGITALTALK,
+    style: {
+      width: 351.035,
+      height: 196.98,
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+    },
+  },
+  {
+    name: "Canvs",
+    logo: IMG_PARTNER_CANVS,
+    style: {
+      width: 137.704,
+      height: 137.704,
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+    },
+  },
+  {
+    name: "Sydney Water",
+    logo: IMG_PARTNER_SYDNEYWATER,
+    style: {
+      width: 126.172,
+      height: 100.937,
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+    },
+  },
+  {
+    name: "ACFS Port Logistics",
+    logo: IMG_PARTNER_ACFS,
+    style: {
+      width: 148.193,
+      height: 96.737,
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+    },
+  },
+  {
+    name: "Tailor 24/7",
+    logo: IMG_PARTNER_TAILOR247,
+    style: {
+      width: 120.87,
+      height: 38.22,
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+    },
+  },
+  {
+    name: "Daily Telegraph",
+    logo: IMG_PARTNER_DAILYTELEGRAPH,
+    style: {
+      width: 126.137,
+      height: 26.279,
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+    },
+  },
+  {
+    name: "Tkxel",
+    logo: IMG_PARTNER_TKXEL,
+    style: {
+      width: 72.983,
+      height: 72.983,
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+    },
+  },
 ]
 
 const MENU_ITEMS = [
@@ -337,7 +436,7 @@ function App() {
             width={heroCard.width}
             height={heroCard.height}
             cardDistance={65 * (heroCard.width / 1200)}
-            verticalDistance={120 * (heroCard.width / 1200)}
+            verticalDistance={100 * (heroCard.width / 1200)}
             delay={3000}
             pauseOnHover={false}
             skewAmount={6}
@@ -402,15 +501,24 @@ function App() {
             <p className="font-syne text-2xl sm:text-4xl md:text-[49px] font-bold leading-none tracking-[-2px] sm:tracking-[-3px]">Trusted by</p>
             <p className="font-syne text-4xl sm:text-6xl md:text-[84px] font-extrabold leading-none tracking-[-2px] sm:tracking-[-3.5px]">28 partners</p>
           </div>
-          <div className="relative aspect-[1758/273] w-full shrink-0 overflow-hidden">
-            <div className="pointer-events-none absolute inset-0 overflow-hidden">
-              <img
-                alt="Partners screenshot"
-                src={IMG_PARTNERS}
-                loading="lazy"
-                decoding="async"
-                className="absolute left-[-3.8%] top-[-339.29%] h-[454.31%] w-[121.84%] max-w-none"
-              />
+          <div className="relative w-full shrink-0 overflow-hidden rounded-[24px] border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.06)] mt-20">
+            <div className="grid w-full grid-cols-2 gap-px sm:grid-cols-4 md:grid-cols-8">
+              {PARTNERS.map((partner) => (
+                <div
+                  key={partner.name}
+                  className="relative aspect-[164/111] overflow-hidden bg-paper-dark"
+                >
+                  <div className="absolute" style={partner.style}>
+                    <img
+                      alt={`${partner.name} logo`}
+                      src={partner.logo}
+                      loading="lazy"
+                      decoding="async"
+                      className="size-full object-cover brightness-0 invert opacity-60"
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -430,84 +538,7 @@ function App() {
       <Services />
 
       {/* ===== Why ===== */}
-      <section
-        id="why"
-        data-name="Section - Why"
-        className="flex w-full shrink-0 flex-col items-start gap-12 sm:gap-16 md:gap-24 overflow-clip px-4 sm:px-8 md:px-[64px] py-12 sm:py-16 md:py-[64px]"
-      >
-        <div className="relative shrink-0 text-5xl sm:text-6xl md:text-[84px] tracking-[-2px] sm:tracking-[-3.5px] whitespace-normal">
-          <p className="font-instrument italic leading-none text-paper-dark">What makes</p>
-          <p className="font-syne font-extrabold leading-none text-white">Drxlo Unique</p>
-        </div>
-
-        <div className="relative grid h-[80vh] w-full shrink-0 grid-cols-1 gap-2 rounded-2xl md:aspect-[1280/770] md:grid-cols-4 md:grid-rows-2">
-          <div className="relative col-span-1 md:col-[1/span_2] md:row-[1/span_2] flex min-h-[440px] md:min-h-0 shrink-0 flex-col items-start gap-[32px] self-stretch justify-self-stretch overflow-clip rounded-[24px] p-6 sm:p-10 md:p-[48px]">
-            <div className="absolute inset-[-0.35px_0_0.35px_0] rounded-[56px]">
-              <div className="absolute inset-0 rounded-[56px] bg-[#ccc] mix-blend-color-burn opacity-67" />
-              <div
-                className="absolute inset-0 rounded-[56px]"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.06) 100%), linear-gradient(90deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.8) 100%)",
-                }}
-              />
-            </div>
-            <p className="relative shrink-0 font-mont text-2xl sm:text-3xl md:text-[40px] font-semibold leading-[1.3] tracking-[-0.8px] text-white">
-              Evaluate your expenses against possible savings.
-            </p>
-            <div className="relative mt-auto rounded-3xl aspect-[516/384] w-[min(100%,516px)] self-center shadow-[0px_0px_40px_0px_rgba(0,0,0,0.4)]">
-              <img alt="" src={IMG_WHY_52} loading="lazy" decoding="async" className="pointer-events-none absolute inset-0 size-full object-cover" />
-            </div>
-          </div>
-
-          <div className="relative col-span-1 md:col-3 md:row-1 flex min-h-[180px] md:min-h-0 shrink-0 flex-col items-start justify-center self-stretch justify-self-stretch overflow-clip rounded-[24px] sm:rounded-[56px] bg-white p-6 sm:p-8 md:p-[32px]">
-            <p className="relative shrink-0 w-auto font-mont text-3xl sm:text-4xl md:w-[238px] md:text-[40px] leading-none tracking-[-2.4px] text-paper-dark uppercase whitespace-pre-wrap">
-              <span className="leading-[1.3]">Your Finance, </span>
-              <span className="leading-[1.3]">Our Headache</span>
-            </p>
-          </div>
-
-          <div className="relative col-span-1 md:col-4 md:row-1 flex min-h-[220px] md:min-h-0 shrink-0 flex-col items-start justify-between self-stretch justify-self-stretch overflow-clip rounded-[24px] p-6 sm:p-8 md:p-[32px]">
-            <div className="absolute inset-[-0.35px_0_0.35px_0] rounded-[56px]">
-              <div className="absolute inset-0 rounded-[56px] bg-[#ccc] mix-blend-color-burn opacity-67" />
-              <div
-                className="absolute inset-0 rounded-[56px]"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.06) 100%), linear-gradient(90deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.8) 100%)",
-                }}
-              />
-            </div>
-            <div className="relative size-[96px] overflow-clip">
-              <img alt="" src={IMG_FINGER} className="block size-full max-w-none" />
-            </div>
-            <p className="relative shrink-0 font-mont text-2xl sm:text-3xl md:text-[32px] font-semibold leading-[1.3] tracking-[-0.64px] text-white">
-              Verification on the go
-            </p>
-          </div>
-
-          <div className="relative col-span-1 md:col-[3/span_2] md:row-2 flex min-h-[280px] md:min-h-0 shrink-0 flex-col items-start gap-[32px] justify-self-stretch overflow-clip p-6 sm:p-8 md:p-[32px]">
-            <div className="absolute inset-[-0.35px_0_0.35px_0] rounded-[56px]">
-              <div className="absolute inset-0 rounded-[56px] bg-[#ccc] mix-blend-color-burn opacity-67" />
-              <div
-                className="absolute inset-0 rounded-[56px]"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.06) 100%), linear-gradient(90deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.8) 100%)",
-                }}
-              />
-            </div>
-            <p className="relative shrink-0 font-mont text-2xl sm:text-3xl md:text-[32px] font-semibold leading-none tracking-[-0.64px] text-white whitespace-normal">
-              <span className="leading-[1.3]">Collective </span>
-              <span className="leading-[1.3]">expenses</span> <br />
-              <span className="leading-[1.3]">under 1 roof</span>
-            </p>
-            <div className="relative mt-auto aspect-[401/217] w-[min(70%,401px)] self-end shadow-[0px_0px_40px_0px_rgba(0,0,0,0.4)]">
-              <img alt="" src={IMG_WHY_53} loading="lazy" decoding="async" className="pointer-events-none absolute inset-0 size-full object-cover" />
-            </div>
-          </div>
-        </div>
-      </section>
+      <DrxloBento />
 
       {/* ===== Testimonials ===== */}
       <section

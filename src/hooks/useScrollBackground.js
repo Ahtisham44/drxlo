@@ -8,7 +8,7 @@ const SECTION_COLORS = [
   { selector: '[data-name="Section - Problems"]', color: "#ffffff" },
   { selector: "#work", color: "#ffffff" },
   { selector: "#services", color: "#ffffff" },
-  { selector: "#why", color: "#ff4d1c" },
+  { selector: "#why", color: "#C8F000" },
   { selector: "#stories", color: "#05080a" },
   { selector: '[data-name="Section - FAQ"]', color: "#ffffff" },
   { selector: "#contact", color: "#ffffff" },

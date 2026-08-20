@@ -18,3 +18,20 @@ export const IMG_WORK_3 = "/assets/work-3.png"
 export const IMG_WORK_4 = "/assets/work-4.png"
 export const IMG_WORK_5 = "/assets/work-5.png"
 export const IMG_FINGER = "/assets/cb41545eb0638afe6e977f721456aadb623235fc.svg"
+
+// Partner logos (black source, inverted to white in CSS)
+export const IMG_PARTNER_NEWSCORP = "/assets/partner-news-corpa.png"
+export const IMG_PARTNER_DIGITALTALK = "/assets/partner-digitaltalk.png"
+export const IMG_PARTNER_CANVS = "/assets/partner-canvs.png"
+export const IMG_PARTNER_SYDNEYWATER = "/assets/partner-sydney-water.png"
+export const IMG_PARTNER_ACFS = "/assets/partner-acfs.png"
+export const IMG_PARTNER_TAILOR247 = "/assets/partner-tailor-247.png"
+export const IMG_PARTNER_DAILYTELEGRAPH = "/assets/partner-daily-telegraph.png"
+export const IMG_PARTNER_TKXEL = "/assets/partner-tkxel.png"
+
+// New Bento 3D Illustration Background Images
+export const IMG_BENTO_PEOPLE = "/assets/Screenshot 2026-08-19 at 5.49 Background Removed.13 PM.png"
+export const IMG_BENTO_CUBE = "/assets/Screenshot 2026-08-19 at 5.48.51 PM.jpg"
+export const IMG_BENTO_MAGNIFY = "/assets/Screenshot 2026-08-19 at 5.48.56 PM 1.png"
+export const IMG_BENTO_CHART = "/assets/Screenshot 2026-08-19 at 5.49.08 PM 1.png"
+export const IMG_BENTO_INFINITY = "/assets/Screenshot 2026-08-19 at 5.49.04 PM 1.png"

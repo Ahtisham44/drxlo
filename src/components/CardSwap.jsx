@@ -42,7 +42,7 @@ const CardSwap = forwardRef(
       width = 500,
       height = 400,
       cardDistance = 60,
-      verticalDistance = 70,
+      verticalDistance = 60,
       delay = 5000,
       autoPlay = true,
       pauseOnHover = false,
@@ -85,15 +85,33 @@ const CardSwap = forwardRef(
     const intervalRef = useRef();
     const container = useRef(null);
 
+    const settle = () => {
+      const total = refs.length;
+      order.current.forEach((childIdx, pos) => {
+        const slot = makeSlot(pos, cardDistance, verticalDistance, total);
+        gsap.set(refs[childIdx].current, {
+          x: slot.x,
+          y: slot.y,
+          z: slot.z,
+          zIndex: slot.zIndex
+        });
+      });
+    };
+
     const goTo = (direction) => {
       const total = refs.length;
       if (total < 2) return;
 
-      tlRef.current?.kill();
+      if (tlRef.current) {
+        tlRef.current.kill();
+        tlRef.current = null;
+        settle();
+      }
 
       if (direction > 0) {
         const [front, ...rest] = order.current;
         const elFront = refs[front].current;
+        order.current = [...rest, front];
         const tl = gsap.timeline();
         tlRef.current = tl;
 
@@ -141,14 +159,11 @@ const CardSwap = forwardRef(
           },
           'return'
         );
-
-        tl.call(() => {
-          order.current = [...rest, front];
-        });
       } else {
         const back = order.current[total - 1];
         const rest = order.current.slice(0, total - 1);
         const elBack = refs[back].current;
+        order.current = [back, ...rest];
         const frontSlot = makeSlot(0, cardDistance, verticalDistance, total);
         const tl = gsap.timeline();
         tlRef.current = tl;
@@ -183,10 +198,6 @@ const CardSwap = forwardRef(
             `promote+=${i * 0.15}`
           );
         });
-
-        tl.call(() => {
-          order.current = [back, ...rest];
-        });
       }
     };
 
@@ -197,8 +208,16 @@ const CardSwap = forwardRef(
 
     useEffect(() => {
       const total = refs.length;
-      refs.forEach((r, i) =>
-        placeNow(r.current, makeSlot(i, cardDistance, verticalDistance, total), skewAmount)
+
+      tlRef.current?.kill();
+      tlRef.current = null;
+
+      order.current.forEach((childIdx, pos) =>
+        placeNow(
+          refs[childIdx].current,
+          makeSlot(pos, cardDistance, verticalDistance, total),
+          skewAmount
+        )
       );
 
       if (!autoPlay) return;
