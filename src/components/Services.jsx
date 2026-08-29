@@ -12,38 +12,42 @@ const CARDS = [
       "Web design",
       "Mobile app design",
       "Design Systems",
-      "Interactive Prototypes",
+      "SaaS Design",
+      "Dashboard Design",      
     ],
     variant: "light",
-    gap: "gap-[40px]",
+    gap: "gap-[24px]",
     image: IMG_SERVICE_L,
     imageSize: "min(55vw, 415px)",
     imageTop: "max(-290px, -22vh)",
   },
   {
-    title: "Product development",
+    title: "Build",
     items: [
-      "Branding & logo design",
-      "UI UX Design",
-      "Design Systems",
-      "Interactive Prototypes",
+      "Web development",
+      "WordPress, Webflow & Framer",
+      "API & Third-Party Integrations",
+      "Custom Web Applications",
+      "Backend Development",
     ],
     variant: "light",
-    gap: "gap-[40px]",
+    gap: "gap-[24px]",
     image: IMG_SERVICE_R,
     imageSize: "min(55vw, 408px)",
     imageTop: "max(-290px, -22vh)",
   },
   {
-    title: "SEO",
+    title: "Launch (SEO)",
     items: [
-      "Branding & logo design",
-      "UI UX Design",
-      "Design Systems",
-      "Interactive Prototypes",
+      "SEO Strategy & Audits",
+      "Technical SEO",
+      "Content & Topical Authority",
+      "Digital PR & Link Building",
+      "Back Linking & Outreach",
+      "AI Search Optimization"
     ],
     variant: "light",
-    gap: "gap-[48px]",
+    gap: "gap-[24px]",
   },
 ]
 
@@ -120,7 +124,7 @@ export default function Services() {
       <div ref={pinRef} className="relative flex h-screen w-full items-start overflow-visible pt-10 sm:pt-16 mb-10">
         <div
           ref={trackRef}
-          className="relative flex h-full w-max items-start gap-[16px] pl-4 sm:pl-8 md:pl-[64px] pr-4 sm:pr-8 md:pr-[64px] will-change-transform"
+          className="relative flex h-full w-max items-stretch gap-[16px] pl-4 sm:pl-8 md:pl-[64px] pr-4 sm:pr-8 md:pr-[64px] will-change-transform"
         >
           {CARDS.map((card) => (
             <div
@@ -138,20 +142,19 @@ export default function Services() {
                 />
               )}
               <GlassCard
-                className={`glass-card--${card.variant} shrink-0`}
+                className={`glass-card--${card.variant} h-auto min-h-[660px] shrink-0`}
                 style={{
                   width: "clamp(300px, min(88vw, 40vw), 760px)",
-                  height: "clamp(480px, 72vh, 640px)",
                   borderRadius: 40,
                 }}
               >
-                <div className="flex h-full w-full flex-col items-start justify-between p-8 sm:p-12 md:p-[64px]">
+                <div className="flex h-full w-full flex-col items-start justify-between p-6 sm:p-12 md:p-[64px]">
                   <p className="relative shrink-0 font-instrument text-4xl sm:text-6xl md:text-[84px] italic leading-none tracking-[-2px] sm:tracking-[-3.5px] text-paper-dark">
                     {card.title}
                   </p>
 
                   <div
-                    className={`relative flex shrink-0 flex-col items-start font-syne font-bold text-2xl sm:text-3xl md:text-[39px] tracking-[-1px] sm:tracking-[-2px] text-paper-dark ${card.gap}`}
+                    className={`relative flex shrink-0 flex-col items-start font-syne font-medium text-2xl sm:text-3xl md:text-[39px] tracking-[-1px] sm:tracking-[-2px] text-paper-dark ${card.gap}`}
                   >
                     {card.items.map((item) => (
                       <div key={item} className="flex flex-col justify-center">

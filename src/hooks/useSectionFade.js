@@ -19,7 +19,7 @@ const SECTION_SELECTOR = [
 // with no scroll-scrubbed fade animation.
 const FIXED_FROM = SECTION_SELECTOR.findIndex((s) => s === "#stories") + 1
 
-export default function useSectionFade() {
+export default function useSectionFade(ready = true) {
   const lenis = useLenis()
 
   useEffect(() => {
@@ -74,5 +74,5 @@ export default function useSectionFade() {
       lenis.off("scroll", sync)
       ctx.revert()
     }
-  }, [lenis])
+  }, [lenis, ready])
 }

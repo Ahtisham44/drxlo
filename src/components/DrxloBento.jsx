@@ -34,7 +34,7 @@ export default function DrxloBento() {
             </h2>
 
             <div className="drxlo-asset-wrap drxlo-people-wrap">
-              <img src={IMG_BENTO_PEOPLE} alt="You'll work directly" className="drxlo-asset-img" />
+              <img src={IMG_BENTO_PEOPLE} alt="You'll work directly" loading="lazy" decoding="async" className="drxlo-asset-img" />
             </div>
           </article>
 
@@ -50,7 +50,7 @@ export default function DrxloBento() {
             </div>
 
             <div className="drxlo-asset-wrap drxlo-cube-wrap">
-              <img src={IMG_BENTO_CUBE} alt="We challenge assumptions" className="drxlo-asset-img" />
+              <img src={IMG_BENTO_CUBE} alt="We challenge assumptions" loading="lazy" decoding="async" className="drxlo-asset-img" />
             </div>
           </article>
 
@@ -62,7 +62,7 @@ export default function DrxloBento() {
             </h3>
 
             <div className="drxlo-asset-wrap drxlo-magnify-wrap">
-              <img src={IMG_BENTO_MAGNIFY} alt="Built on research" className="drxlo-asset-img" />
+              <img src={IMG_BENTO_MAGNIFY} alt="Built on research" loading="lazy" decoding="async" className="drxlo-asset-img" />
             </div>
           </article>
 
@@ -89,7 +89,7 @@ export default function DrxloBento() {
             </h3>
 
             <div className="drxlo-asset-wrap drxlo-chart-wrap">
-              <img src={IMG_BENTO_CHART} alt="Every decision must improve the product" className="drxlo-asset-img" />
+              <img src={IMG_BENTO_CHART} alt="Every decision must improve the product" loading="lazy" decoding="async" className="drxlo-asset-img" />
             </div>
           </article>
 
@@ -102,7 +102,7 @@ export default function DrxloBento() {
             </h3>
 
             <div className="drxlo-asset-wrap drxlo-infinity-wrap">
-              <img src={IMG_BENTO_INFINITY} alt="Support doesn't end after launch" className="drxlo-asset-img" />
+              <img src={IMG_BENTO_INFINITY} alt="Support doesn't end after launch" loading="lazy" decoding="async" className="drxlo-asset-img" />
             </div>
           </article>
         </div>

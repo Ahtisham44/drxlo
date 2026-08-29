@@ -14,6 +14,7 @@ const ScrollStack = ({
   itemScale = 0.03,
   itemStackDistance = 30,
   stackPosition = '10%',
+  scaleStartPosition,
   scaleEndPosition = '10%',
   baseScale = 0.85,
   scaleDuration = 0.9,
@@ -99,6 +100,7 @@ const ScrollStack = ({
     const { scrollTop, containerHeight } = getScrollData();
     const scaleEndPositionPx = parsePercentage(scaleEndPosition, containerHeight);
     const staticStackPositionPx = parsePercentage(stackPosition, containerHeight);
+    const scaleStartPositionPx = parsePercentage(scaleStartPosition ?? stackPosition, containerHeight);
     const { offsets, endOffset: endElementTop } = layoutRef.current;
     const pinEnd = endElementTop - containerHeight / 2;
 
@@ -111,7 +113,7 @@ const ScrollStack = ({
       if (!card) return;
 
       const cardTop = offsets[i];
-      const triggerStart = cardTop - stackPositionPx - itemStackDistance * i;
+      const triggerStart = cardTop - scaleStartPositionPx - itemStackDistance * i;
       const triggerEnd = cardTop - scaleEndPositionPx;
       const pinStart = cardTop - stackPositionPx - itemStackDistance * i;
 
@@ -193,6 +195,7 @@ const ScrollStack = ({
     itemScale,
     itemStackDistance,
     stackPosition,
+    scaleStartPosition,
     scaleEndPosition,
     baseScale,
     rotationAmount,
@@ -284,6 +287,7 @@ const ScrollStack = ({
     itemScale,
     itemStackDistance,
     stackPosition,
+    scaleStartPosition,
     scaleEndPosition,
     baseScale,
     scaleDuration,

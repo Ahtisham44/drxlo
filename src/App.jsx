@@ -1,5 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react"
-import { gsap } from "gsap"
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react"
 import useScrollBackground from "@/hooks/useScrollBackground"
 import useSectionFade from "@/hooks/useSectionFade"
 import { Button } from "@/components/ui/button"
@@ -7,17 +6,8 @@ import GlassSurface from "@/components/GlassSurface"
 import TextSwap from "@/components/TextSwap"
 import Topnav from "@/components/Topnav"
 import BubbleMenu from "@/components/BubbleMenu"
-import Problems from "@/components/Problems"
-import Work from "@/components/Work"
-import RequestSolution from "@/components/RequestSolution"
-import Services from "@/components/Services"
-import FAQ from "@/components/FAQ"
-import Form from "@/components/Form"
-import Footer from "@/components/Footer"
-import DrxloBento from "@/components/DrxloBento"
 import CardSwap, { Card } from "@/components/CardSwap"
 import {
-  IMG_FINGER,
   IMG_PARTNER_ACFS,
   IMG_PARTNER_CANVS,
   IMG_PARTNER_DAILYTELEGRAPH,
@@ -26,17 +16,21 @@ import {
   IMG_PARTNER_SYDNEYWATER,
   IMG_PARTNER_TAILOR247,
   IMG_PARTNER_TKXEL,
-  IMG_TEST_MAIN,
-  IMG_TEST_MID_A,
-  IMG_TEST_MID_B,
-  IMG_TEST_SMALL,
-  IMG_VECTOR_1,
-  IMG_VECTOR_2,
-  IMG_VECTOR_3,
   IMG_WHATSAPP,
-  IMG_WHY_52,
-  IMG_WHY_53,  
 } from "@/lib/assets"
+
+// ===== Below-the-fold sections are code-split. They load on demand as the
+// user scrolls, shrinking the initial JS payload without changing layout,
+// styling, or interaction.
+const Problems = lazy(() => import("@/components/Problems"))
+const Work = lazy(() => import("@/components/Work"))
+const RequestSolution = lazy(() => import("@/components/RequestSolution"))
+const Services = lazy(() => import("@/components/Services"))
+const DrxloBento = lazy(() => import("@/components/DrxloBento"))
+const StoriesCollage = lazy(() => import("@/components/StoriesCollage"))
+const FAQ = lazy(() => import("@/components/FAQ"))
+const Form = lazy(() => import("@/components/Form"))
+const Footer = lazy(() => import("@/components/Footer"))
 
 // ===== HERO SWAP CARDS =====
 // Paste your own image in any card below. You can use:
@@ -44,8 +38,8 @@ import {
 //  - an imported asset:  IMG_VECTOR_1 (see imports above)
 //  - any external URL:  "https://example.com/image.jpg"
 // Add or remove entries to change the number of cards.
-const HERO_CARDS = ["public/assets/Frame 4.png","public/assets/Frame 18.png","public/assets/Frame 28.png","public/assets/Frame 39.png","public/assets/Frame 17.png",
-  "public/assets/Frame 7.png","public/assets/Frame 41.png","public/assets/Frame 42.png"
+const HERO_CARDS = ["/assets/Frame 4.png","/assets/Frame 18.png","/assets/Frame 28.png","/assets/Frame 39.png","/assets/Frame 17.png",
+  "/assets/Frame 7.png","/assets/Frame 41.png","/assets/Frame 42.png"
 ]
 
 const STATS = [
@@ -191,205 +185,31 @@ const MENU_ITEMS = [
   },
 ]
 
-const TESTIMONIALS = [
-  {
-    image: IMG_TEST_MAIN,
-    name: "Emily Thompson",
-    company: "BrandLite GmbH",
-    quote:
-      "Working with this team was fantastic! They revamped my website to be sleek, modern, and fully functional. Great communication and timely delivery—highly recommend for boosting your online presence!",
-  },
-  {
-    image: IMG_TEST_MID_A,
-    name: "Daniel Carter",
-    company: "Nimbus Labs",
-    quote:
-      "Our analytics dashboard was rebuilt from the ground up and the difference is night and day. Fast, reliable, and beautifully crafted.",
-  },
-  {
-    image: IMG_TEST_MID_B,
-    name: "Sofia Reyes",
-    company: "Lumen Studio",
-    quote:
-      "From the first call to launch they kept us in the loop. The app feels polished and our users keep complimenting the design.",
-  },
-  {
-    image: IMG_TEST_SMALL,
-    name: "Marcus Chen",
-    company: "Vertex Analytics",
-    quote:
-      "They handled a complex migration without breaking a thing. Clear communication and rock-solid delivery—exactly what we needed.",
-  },
-]
+// Transparent placeholder so a lazy section never shifts layout while its
+// chunk downloads; the fixed page background already matches the section theme.
+const SectionFallback = () => <div aria-hidden="true" className="min-h-[30vh]" />
 
-// Horizontal flat testimonial deck powered by a GSAP timeline. Every card is a
-// stable, independent DOM node (one ref per testimonial), so navigation animates
-// pure GPU-friendly transforms with zero React re-renders per frame. Cards share
-// the same size (the active one ≈ 60% of the stack width) and sit directly on
-// top of each other, fanned out left and right; back cards render at 80%
-// opacity. A next/prev click advances a cyclic order array — the card that
-// wraps around the deck dips behind the stack (low z-index) while the incoming
-// card rises to the front.
-const CARD_WIDTH_PCT = 60
-const STEP_PCT = 15
-const BACK_SCALE = 0.05
-
-function StoriesCollage() {
-  const cardRefs = useRef([])
-  const tlRef = useRef(null)
-  const orderRef = useRef(TESTIMONIALS.map((_, i) => i))
-  const [active, setActive] = useState(0)
-  const total = TESTIMONIALS.length
-
-  const slotVars = (slot) => {
-    const depth = Math.abs(slot)
-    return {
-      xPercent: -50 + slot * STEP_PCT,
-      scale: 1 - depth * BACK_SCALE,
-      opacity: slot === 0 ? 1 : 0.8,
-      zIndex: 10 - depth,
-    }
-  }
-
-  const layoutSlot = (position) =>
-    position === 0 ? 0 : position === 1 ? 1 : position === 2 ? 2 : -1
-
-  const go = (dir) => {
-    if (total < 2) return
-    const order = orderRef.current
-    const nextOrder =
-      dir > 0
-        ? [order[3], order[0], order[1], order[2]]
-        : [order[1], order[2], order[3], order[0]]
-    orderRef.current = nextOrder
-    setActive(nextOrder[0])
-
-    const cards = cardRefs.current
-    if (!cards.length) return
-
-    const wrap = dir > 0 ? order[2] : order[3]
-
-    tlRef.current?.kill()
-    gsap.killTweensOf(cards)
-    tlRef.current = gsap.timeline()
-
-    nextOrder.forEach((cardIdx, position) => {
-      const vars = slotVars(layoutSlot(position))
-      if (cardIdx === wrap) vars.zIndex = 3
-      gsap.set(cards[cardIdx], { zIndex: vars.zIndex })
-      tlRef.current.to(
-        cards[cardIdx],
-        {
-          xPercent: vars.xPercent,
-          scale: vars.scale,
-          opacity: vars.opacity,
-          duration: 0.6,
-          ease: "power2.inOut",
-        },
-        0,
-      )
-    })
-  }
-
-  useLayoutEffect(() => {
-    const cards = cardRefs.current
-    if (!cards.length) return
-    orderRef.current.forEach((cardIdx, position) => {
-      gsap.set(cards[cardIdx], {
-        ...slotVars(layoutSlot(position)),
-        transformOrigin: "50% 50%",
-        force3D: true,
-      })
-    })
-  }, [])
-
+// Mounts only after the lazy section resolves, so the ready signal is accurate.
+function LazySection({ onReady, children }) {
   useEffect(() => {
-    const cards = cardRefs.current
-    return () => {
-      tlRef.current?.kill()
-      gsap.killTweensOf(cards)
-    }
-  }, [])
-
-  const arrowClass =
-    "absolute top-1/2 z-30 grid size-12 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-black/40 text-white shadow-[0_4px_20px_rgba(0,0,0,0.35)] backdrop-blur-md transition hover:bg-white/20 hover:scale-105 active:scale-95 sm:size-14"
-
-  return (
-    <div className="relative mx-auto w-full max-w-[1200px]">
-      <div className="relative w-full px-8 sm:px-16 lg:px-20">
-        <div className="relative w-full" style={{ aspectRatio: "1 / 0.78" }}>
-          {TESTIMONIALS.map((t, i) => (
-            <div
-              key={i}
-              ref={(el) => {
-                if (el) cardRefs.current[i] = el
-              }}
-              aria-hidden={i !== active}
-              className="absolute inset-y-0 left-1/2 flex flex-col overflow-clip rounded-4xl border border-[rgba(255,255,255,0.12)] bg-[#0b0f12] shadow-[0px_20px_50px_rgba(0,0,0,0.45)] will-change-transform"
-              style={{ width: `${CARD_WIDTH_PCT}%` }}
-            >
-              <div className="relative min-h-0 flex-1">
-                <img
-                  alt=""
-                  src={t.image}
-                  loading="lazy"
-                  decoding="async"
-                  className="absolute inset-0 size-full object-cover"
-                />
-              </div>
-              <div className="relative shrink-0 border-t border-white/10 bg-black/60 p-4 backdrop-blur-xl sm:p-6">
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                  <p className="font-syne font-bold leading-[1.3] text-white">{t.name}</p>
-                  <span className="size-1 rounded-full bg-white/30" />
-                  <p className="font-geist text-sm leading-none text-white/45">{t.company}</p>
-                </div>
-                <p className="mt-3 font-geist font-light leading-[1.5] text-paper-light">
-                  {t.quote}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <button
-        type="button"
-        aria-label="Previous testimonial"
-        onClick={() => go(-1)}
-        className={`${arrowClass} left-0`}
-      >
-        <Chevron direction="left" />
-      </button>
-      <button
-        type="button"
-        aria-label="Next testimonial"
-        onClick={() => go(1)}
-        className={`${arrowClass} right-0`}
-      >
-        <Chevron direction="right" />
-      </button>
-    </div>
-  )
+    onReady()
+  }, [onReady])
+  return children
 }
 
-const Chevron = ({ direction }) => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path
-      d={direction === "left" ? "M15 19l-7-7 7-7" : "M9 5l7 7-7 7"}
-      stroke="currentColor"
-      strokeWidth="2.4"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-)
+const LAZY_SECTION_COUNT = 9
 
 function App() {
   const bgRef = useRef(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const [heroCard, setHeroCard] = useState({ width: 1200, height: 800 })
-  useScrollBackground(bgRef)
-  useSectionFade()
+  const [loadedSections, setLoadedSections] = useState(0)
+  const onSectionLoaded = useCallback(() => {
+    setLoadedSections((n) => n + 1)
+  }, [])
+  const sectionsReady = loadedSections >= LAZY_SECTION_COUNT
+  useScrollBackground(bgRef, sectionsReady)
+  useSectionFade(sectionsReady)
 
   useEffect(() => {
     const update = () => {
@@ -444,7 +264,13 @@ function App() {
           >
             {HERO_CARDS.map((src, i) => (
               <Card key={i} className="overflow-hidden rounded-3xl border-0 bg-transparent]">
-                <img alt={`Card ${i + 1}`} src={src} className="size-full object-cover" />
+                <img
+                  alt={`Card ${i + 1}`}
+                  src={src}
+                  loading={i === 0 ? "eager" : "lazy"}
+                  decoding="async"
+                  className="size-full object-cover"
+                />
               </Card>
             ))}
           </CardSwap>
@@ -475,7 +301,7 @@ function App() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <img alt="" src={IMG_WHATSAPP} />
+                    <img alt="" src={IMG_WHATSAPP} decoding="async" />
                     Chat on Whatsapp
                   </a>
                 </Button>
@@ -526,19 +352,39 @@ function App() {
       
 
       {/* ===== Problems ===== */}
-      <Problems />
+      <Suspense fallback={<SectionFallback />}>
+        <LazySection onReady={onSectionLoaded}>
+          <Problems />
+        </LazySection>
+      </Suspense>
 
       {/* ===== Work ===== */}
-      <Work />
+      <Suspense fallback={<SectionFallback />}>
+        <LazySection onReady={onSectionLoaded}>
+          <Work />
+        </LazySection>
+      </Suspense>
 
       {/* ===== Request Solution ===== */}
-      <RequestSolution />
+      <Suspense fallback={<SectionFallback />}>
+        <LazySection onReady={onSectionLoaded}>
+          <RequestSolution />
+        </LazySection>
+      </Suspense>
 
       {/* ===== Services ===== */}
-      <Services />
+      <Suspense fallback={<SectionFallback />}>
+        <LazySection onReady={onSectionLoaded}>
+          <Services />
+        </LazySection>
+      </Suspense>
 
       {/* ===== Why ===== */}
-      <DrxloBento />
+      <Suspense fallback={<SectionFallback />}>
+        <LazySection onReady={onSectionLoaded}>
+          <DrxloBento />
+        </LazySection>
+      </Suspense>
 
       {/* ===== Testimonials ===== */}
       <section
@@ -551,17 +397,33 @@ function App() {
           <p className="font-instrument italic leading-none">from our partners</p>
         </div>
 
-        <StoriesCollage />
+        <Suspense fallback={<SectionFallback />}>
+          <LazySection onReady={onSectionLoaded}>
+            <StoriesCollage />
+          </LazySection>
+        </Suspense>
       </section>
 
       {/* ===== FAQ ===== */}
-      <FAQ />
+      <Suspense fallback={<SectionFallback />}>
+        <LazySection onReady={onSectionLoaded}>
+          <FAQ />
+        </LazySection>
+      </Suspense>
 
       {/* ===== Form ===== */}
-      <Form />
+      <Suspense fallback={<SectionFallback />}>
+        <LazySection onReady={onSectionLoaded}>
+          <Form />
+        </LazySection>
+      </Suspense>
 
       {/* ===== Footer ===== */}
-      <Footer />
+      <Suspense fallback={<SectionFallback />}>
+        <LazySection onReady={onSectionLoaded}>
+          <Footer />
+        </LazySection>
+      </Suspense>
     </div>
   )
 }

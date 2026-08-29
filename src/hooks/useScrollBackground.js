@@ -19,7 +19,7 @@ const SECTION_COLORS = [
 // background — they carry their own static, dedicated background color.
 const STATIC_FROM = SECTION_COLORS.findIndex((s) => s.selector === "#stories") + 1
 
-export default function useScrollBackground(bgRef) {
+export default function useScrollBackground(bgRef, ready = true) {
   const lenis = useLenis()
 
   useEffect(() => {
@@ -88,5 +88,5 @@ export default function useScrollBackground(bgRef) {
       lenis.off("scroll", sync)
       ctx.revert()
     }
-  }, [lenis, bgRef])
+  }, [lenis, bgRef, ready])
 }

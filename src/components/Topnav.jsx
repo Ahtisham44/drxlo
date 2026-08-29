@@ -33,6 +33,7 @@ export default function Topnav({ menuOpen = false, onToggleMenu }) {
           <span className="relative block size-[32px] transition-[transform] duration-300">
             <img
               alt="Menu"
+              decoding="async"
               className={`block size-[32px] transition-[transform,filter] duration-300 ${isLight ? 'invert' : ''} ${menuOpen ? 'rotate-90 scale-0' : ''}`}
               src={IMG_MENU}
             />

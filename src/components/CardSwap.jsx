@@ -112,7 +112,7 @@ const CardSwap = forwardRef(
         const [front, ...rest] = order.current;
         const elFront = refs[front].current;
         order.current = [...rest, front];
-        const tl = gsap.timeline();
+        const tl = gsap.timeline({ defaults: { force3D: true } });
         tlRef.current = tl;
 
         tl.to(elFront, {
@@ -165,7 +165,7 @@ const CardSwap = forwardRef(
         const elBack = refs[back].current;
         order.current = [back, ...rest];
         const frontSlot = makeSlot(0, cardDistance, verticalDistance, total);
-        const tl = gsap.timeline();
+        const tl = gsap.timeline({ defaults: { force3D: true } });
         tlRef.current = tl;
 
         tl.addLabel('promote', `-=${config.durDrop * config.promoteOverlap}`);

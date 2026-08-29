@@ -5,7 +5,7 @@ import { Select } from "@/components/ui/select"
 
 const INDUSTRIES = [
   "Saas",
-  "Finance",
+  "Fintech",
   "Landing page",
   "Mobile app",
   "Dashboard",

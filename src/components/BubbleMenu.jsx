@@ -102,6 +102,7 @@ export default function BubbleMenu({
           scale: 1,
           duration: animationDuration,
           ease: animationEase,
+          force3D: true,
         })
         if (labels[i]) {
           tl.to(
@@ -111,6 +112,7 @@ export default function BubbleMenu({
               autoAlpha: 1,
               duration: animationDuration,
               ease: 'power3.out',
+              force3D: true,
             },
             `-=${animationDuration * 0.9}`,
           )
@@ -123,11 +125,13 @@ export default function BubbleMenu({
         autoAlpha: 0,
         duration: 0.2,
         ease: 'power3.in',
+        force3D: true,
       })
       gsap.to(bubbles, {
         scale: 0,
         duration: 0.2,
         ease: 'power3.in',
+        force3D: true,
         onComplete: () => {
           gsap.set(overlay, { display: 'none' })
           setShowOverlay(false)
