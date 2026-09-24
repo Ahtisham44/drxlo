@@ -277,15 +277,15 @@ function App() {
         </div>
 
         <div className="relative flex w-full shrink-0 flex-col items-center pt-10">
-          <div className="relative flex shrink-0 flex-col items-center gap-[0.25px] pb-[1.5px] text-center tracking-[-2px] sm:tracking-[-3.5px] whitespace-normal">
-            <div className="flex shrink-0 flex-col justify-center font-syne text-5xl sm:text-7xl md:text-[104px] font-extrabold text-[#e5e8ec]">
-              <p className="mb-0 leading-none">We design</p>
-              <p className="leading-none">products that</p>
-            </div>
-            <div className="flex shrink-0 flex-col justify-center font-instrument text-6xl sm:text-8xl md:text-[120px] italic text-drx-lime">
+          <h1 className="relative flex shrink-0 flex-col items-center gap-[0.25px] pb-[1.5px] text-center tracking-[-2px] sm:tracking-[-3.5px] whitespace-normal">
+            <span className="flex shrink-0 flex-col justify-center font-syne text-5xl sm:text-7xl md:text-[104px] font-extrabold text-[#e5e8ec]">
+              <span className="mb-0 leading-none">We design</span>
+              <span className="leading-none">products that</span>
+            </span>
+            <span className="flex shrink-0 flex-col justify-center font-instrument text-6xl sm:text-8xl md:text-[120px] italic text-drx-lime">
               <TextSwap />
-            </div>
-          </div>
+            </span>
+          </h1>
 
           <div className="relative flex w-full shrink-0 items-center justify-center pt-10 sm:pt-14 md:pt-24">
             <div className="flex w-full max-w-xl shrink-0 flex-col items-center justify-center gap-4 sm:flex-row sm:items-start sm:gap-[16px]">
@@ -323,10 +323,10 @@ function App() {
 
         {/* ===== Trusted by partners ===== */}
         <div className="relative flex w-full shrink-0 flex-col items-left py-80">
-          <div className="relative shrink-0 text-paper-light">
-            <p className="font-syne text-2xl sm:text-4xl md:text-[49px] font-bold leading-none tracking-[-2px] sm:tracking-[-3px]">Trusted by</p>
-            <p className="font-syne text-4xl sm:text-6xl md:text-[84px] font-extrabold leading-none tracking-[-2px] sm:tracking-[-3.5px]">28 partners</p>
-          </div>
+          <h2 className="relative flex shrink-0 flex-col text-paper-light">
+            <span className="font-syne text-2xl sm:text-4xl md:text-[49px] font-bold leading-none tracking-[-2px] sm:tracking-[-3px]">Trusted by</span>
+            <span className="font-syne text-4xl sm:text-6xl md:text-[84px] font-extrabold leading-none tracking-[-2px] sm:tracking-[-3.5px]">28 partners</span>
+          </h2>
           <div className="relative w-full shrink-0 overflow-hidden rounded-[24px] border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.06)] mt-20">
             <div className="grid w-full grid-cols-2 gap-px sm:grid-cols-4 md:grid-cols-8">
               {PARTNERS.map((partner) => (
@@ -392,10 +392,10 @@ function App() {
         data-name="Section - Testimonials"
         className="relative flex w-full shrink-0 flex-col items-start gap-10 sm:gap-14 md:gap-[64px] overflow-clip px-4 sm:px-8 md:px-[64px] pb-12 sm:pb-16 md:pb-[64px] pt-12 sm:pt-16 md:pt-[64px]"
       >
-        <div className="relative flex w-full shrink-0 flex-col items-start text-5xl sm:text-6xl md:text-[84px] tracking-[-2px] sm:tracking-[-3.5px] text-paper-light whitespace-normal">
-          <p className="font-syne font-extrabold leading-none">Stories</p>
-          <p className="font-instrument italic leading-none">from our partners</p>
-        </div>
+        <h2 className="relative flex w-full shrink-0 flex-col items-start text-5xl sm:text-6xl md:text-[84px] tracking-[-2px] sm:tracking-[-3.5px] text-paper-light whitespace-normal">
+          <span className="font-syne font-extrabold leading-none">Stories</span>
+          <span className="font-instrument italic leading-none">from our partners</span>
+        </h2>
 
         <Suspense fallback={<SectionFallback />}>
           <LazySection onReady={onSectionLoaded}>

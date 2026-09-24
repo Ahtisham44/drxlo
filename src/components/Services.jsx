@@ -112,7 +112,7 @@ export default function Services() {
     >
       <div className="flex w-full flex-col items-start px-4 sm:px-8 md:px-[64px] pb-[16px] mt-12 sm:mt-20 md:mt-32 font-syne font-extrabold">
         <div className="relative flex w-full flex-col justify-center text-4xl sm:text-6xl md:text-[104px] leading-none tracking-[-2px] sm:tracking-[-3.5px] text-paper-dark">
-          <p className="leading-none">We help you decide</p>
+          <h2 className="leading-none">We help you decide</h2>
         </div>
         <div className="flex w-full flex-col justify-center text-right text-2xl sm:text-4xl md:text-[52px] leading-none tracking-[-1.5px] sm:tracking-[-2.5px] text-drx-accent mb-24 sm:mb-40 md:mb-60">
           <p className="mb-0 leading-none">what to build,</p>
@@ -149,9 +149,9 @@ export default function Services() {
                 }}
               >
                 <div className="flex h-full w-full flex-col items-start justify-between p-6 sm:p-12 md:p-[64px]">
-                  <p className="relative shrink-0 font-instrument text-4xl sm:text-6xl md:text-[84px] italic leading-none tracking-[-2px] sm:tracking-[-3.5px] text-paper-dark">
+                  <h3 className="relative shrink-0 font-instrument text-4xl sm:text-6xl md:text-[84px] italic leading-none tracking-[-2px] sm:tracking-[-3.5px] text-paper-dark">
                     {card.title}
-                  </p>
+                  </h3>
 
                   <div
                     className={`relative flex shrink-0 flex-col items-start font-syne font-medium text-2xl sm:text-3xl md:text-[39px] tracking-[-1px] sm:tracking-[-2px] text-paper-dark ${card.gap}`}

@@ -30,9 +30,9 @@ export default function RequestSolution() {
 
   return (
     <section data-name="Section - Request solution" className="relative z-20 flex w-full shrink-0 flex-col items-center gap-[32px] bg-white mb-40 px-4 py-20 sm:px-8 md:py-16">
-      <p className="font-syne text-[clamp(24px,4vw,56px)] tracking-[-2px] sm:tracking-[-3px] text-paper-dark text-center">
+      <h2 className="font-syne text-[clamp(24px,4vw,56px)] tracking-[-2px] sm:tracking-[-3px] text-paper-dark text-center">
         Not find what you are looking for?
-      </p>
+      </h2>
       <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-[32px]">
         <p className="font-syne text-[clamp(24px,4vw,56px)] font-extrabold tracking-[-2px] sm:tracking-[-3px] text-paper-dark flex flex-wrap items-center justify-center gap-2 sm:gap-4">
           <span>Show me</span>

@@ -87,9 +87,9 @@ export default function Footer() {
       <div className="grid w-full grid-cols-2 gap-x-8 gap-y-12 lg:grid-cols-4 lg:gap-x-[120px]">
         {COLUMNS.map((col) => (
           <div key={col.title} className="flex flex-col items-start gap-[40px]">
-            <p className="font-instrument text-2xl sm:text-3xl md:text-[32px] italic leading-[1.3] tracking-[-1px]">
+            <h2 className="font-instrument text-2xl sm:text-3xl md:text-[32px] italic leading-[1.3] tracking-[-1px]">
               {col.title}
-            </p>
+            </h2>
             <div className="flex flex-col items-start gap-[8px] font-geist text-base sm:text-lg md:text-[20px] font-light leading-[1.5]">
               {col.links.map(({ label, href }) => (
                 <Button

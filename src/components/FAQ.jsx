@@ -62,10 +62,10 @@ function FaqColumn({ items, start }) {
           value={`item-${start + i}`}
           className="not-last:border-b border-paper-light-3"
         >
-          <AccordionTrigger className="[&>span]:ml-auto">
-            <p className="font-syne text-lg sm:text-2xl md:text-[32px] font-medium leading-[1.3] tracking-[-1.2px] text-paper-dark">
+          <AccordionTrigger className="[&>[data-slot=accordion-trigger-icon]]:ml-auto">
+            <span className="font-syne text-lg sm:text-2xl md:text-[32px] font-medium leading-[1.3] tracking-[-1.2px] text-paper-dark">
               {item.question}
-            </p>
+            </span>
           </AccordionTrigger>
           {item.answer ? (
             <AccordionContent>
@@ -87,10 +87,10 @@ export default function FAQ() {
       data-name="Section - FAQ"
       className="flex w-full shrink-0 flex-col items-start gap-10 sm:gap-14 md:gap-[64px] overflow-x-clip bg-white px-4 sm:px-8 md:px-[64px] py-12 sm:py-16 md:py-[64px]"
     >
-      <div className="relative flex w-full shrink-0 flex-col items-start text-5xl sm:text-6xl md:text-[84px] tracking-[-2px] sm:tracking-[-3.5px] text-paper-dark whitespace-normal">
-        <p className="font-syne font-extrabold leading-none">Frequently</p>
-        <p className="font-instrument italic leading-none">asked questions</p>
-      </div>
+      <h2 className="relative flex w-full shrink-0 flex-col items-start text-5xl sm:text-6xl md:text-[84px] tracking-[-2px] sm:tracking-[-3.5px] text-paper-dark whitespace-normal">
+        <span className="font-syne font-extrabold leading-none">Frequently</span>
+        <span className="font-instrument italic leading-none">asked questions</span>
+      </h2>
 
       <div className="grid w-full grid-cols-1 items-start gap-x-16 lg:grid-cols-2">
         <FaqColumn items={ITEMS.slice(0, COLUMN_BREAK)} start={0} />

@@ -25,9 +25,9 @@ export default function TextSwap({
   }, [phrases.length, interval])
 
   return (
-    <div className={`relative inline-flex justify-center overflow-hidden ${className}`}>
+    <span className={`relative inline-flex justify-center overflow-hidden ${className}`}>
       <AnimatePresence mode="wait">
-        <motion.p
+        <motion.span
           key={currentIndex}
           initial={{ y: 25, opacity: 0, filter: "blur(8px)" }}
           animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
@@ -36,8 +36,8 @@ export default function TextSwap({
           className="leading-none"
         >
           {phrases[currentIndex]}
-        </motion.p>
+        </motion.span>
       </AnimatePresence>
-    </div>
+    </span>
   )
 }

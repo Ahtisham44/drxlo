@@ -89,13 +89,13 @@ function WorkCard({ item }) {
         />
         <div className={`absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t ${item.darkText ? "from-black/10" : "from-black/40"} to-transparent`} />
         <div className="absolute inset-0 flex items-start justify-between p-[clamp(24px,3vw,40px)]">
-          <p className={`font-syne font-bold text-[clamp(28px,3.5vw,56px)] tracking-[-2px] ${item.darkText ? "text-neutral-900" : "text-white"}`}>
+          <h3 className={`font-syne font-bold text-[clamp(28px,3.5vw,56px)] tracking-[-2px] ${item.darkText ? "text-neutral-900" : "text-white"}`}>
             <span className="leading-[1.3]">{before}</span>
             {item.highlight && (
               <span className="font-instrument italic leading-[1.3]">{item.highlight}</span>
             )}
             <span className="leading-[1.3]">{after}</span>
-          </p>        
+          </h3>        
         </div>
       </div>
     </ScrollStackItem>
@@ -105,6 +105,7 @@ function WorkCard({ item }) {
 export default function Work() {
   return (
     <section id="work" data-name="Section - work" className="w-full shrink-0">
+      <h2 className="sr-only">Selected work</h2>
       <div className="relative w-full">
         <ScrollStack
           useWindowScroll

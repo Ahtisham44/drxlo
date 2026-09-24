@@ -49,22 +49,26 @@ function SlideContent({ item }) {
 
   if (item.type === "soundFamiliar") {
     return (
-      <p className="font-syne text-4xl sm:text-6xl md:text-[104px] font-extrabold leading-none tracking-[-2px] sm:tracking-[-3.5px] text-paper-dark text-center">
-        Sound familiar? <br /> you&apos;re not alone.
-      </p>
+      <div className="flex w-full justify-center">
+        <p className="font-syne text-4xl sm:text-6xl md:text-[104px] font-extrabold leading-none tracking-[-2px] sm:tracking-[-3.5px] text-paper-dark text-center">
+          Sound familiar? <br /> you&apos;re not alone.
+        </p>
+      </div>
     )
   }
 
   if (item.type === "cta") {
     return (
-      <p className="font-syne text-4xl sm:text-6xl md:text-[104px] font-extrabold leading-none tracking-[-2px] sm:tracking-[-3.5px] text-center">
-        <span className="font-instrument text-3xl sm:text-5xl md:text-[84px] italic font-light tracking-[-2px] sm:tracking-[-3.5px] text-paper-dark">
-          If you&apos;re experiencing any of these,
-        </span>{" "}
-        <br />
-        <span className="text-drx-accent">Drxlo</span>{" "}
-        <span className="text-paper-dark">already solved it.</span>
-      </p>
+      <div className="flex w-full justify-center">
+        <p className="font-syne text-4xl sm:text-6xl md:text-[104px] font-extrabold leading-none tracking-[-2px] sm:tracking-[-3.5px] text-center">
+          <span className="font-instrument text-3xl sm:text-5xl md:text-[84px] italic font-light tracking-[-2px] sm:tracking-[-3.5px] text-paper-dark">
+            If you&apos;re experiencing any of these,
+          </span>{" "}
+          <br />
+          <span className="text-drx-accent">Drxlo</span>{" "}
+          <span className="text-paper-dark">already solved it.</span>
+        </p>
+      </div>
     )
   }
 
@@ -158,6 +162,7 @@ export default function Problems() {
       className="relative w-full overflow-clip"
       style={{ height: `${SLIDES.length * 60}vh` }}
     >
+      <h2 className="sr-only">Problems we solve</h2>
       <div
         className="sticky top-0 flex h-screen w-full flex-col items-center overflow-clip"
         style={{

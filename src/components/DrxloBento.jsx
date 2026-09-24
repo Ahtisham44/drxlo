@@ -17,21 +17,21 @@ export default function DrxloBento() {
       className="flex w-full shrink-0 flex-col items-start justify-start gap-12 sm:gap-16 md:gap-20 overflow-clip px-4 sm:px-8 md:px-[64px] py-12 sm:py-16 md:py-[64px]"
     >
       <div className="drxlo-layout">
-        <div className="drxlo-layout-copy sticky top-40">
-          <p className="font-instrument italic leading-none text-paper-dark">What makes</p>
-          <p className="font-syne font-extrabold leading-none text-paper-dark">Drxlo Unique</p>
-        </div>
+        <h2 className="drxlo-layout-copy sticky top-40">
+          <span className="font-instrument italic leading-none text-paper-dark">What makes</span>
+          <span className="font-syne font-extrabold leading-none text-paper-dark">Drxlo Unique</span>
+        </h2>
 
         <div className="drxlo-bento-wrapper">
         <div className="drxlo-bento">
           {/* 01 */}
           <article className="drxlo-cell drxlo-direct">
-            <h2 className="drxlo-medium">
+            <h3 className="drxlo-medium">
               You’ll work<br />
               directly with<br />
               the person<br />
               you hired
-            </h2>
+            </h3>
 
             <div className="drxlo-asset-wrap drxlo-people-wrap">
               <img src={IMG_BENTO_PEOPLE} alt="You'll work directly" loading="lazy" decoding="async" className="drxlo-asset-img" />
@@ -41,12 +41,12 @@ export default function DrxloBento() {
           {/* 02 */}
           <article className="drxlo-cell drxlo-challenge">
             <div className="drxlo-challenge-copy">
-              <h2 className="drxlo-medium">
+              <h3 className="drxlo-medium">
                 <span className="drxlo-lime">We challenge</span><br />
                 assumptions<br />
                 before designing<br />
                 a single screen,
-              </h2>
+              </h3>
             </div>
 
             <div className="drxlo-asset-wrap drxlo-cube-wrap">
@@ -69,13 +69,13 @@ export default function DrxloBento() {
           {/* 04 */}
           <article className="drxlo-cell drxlo-center">            
 
-            <h2 className="drxlo-headline">
-              You’ll work<br />
-              directly<br />
-              with the<br />
-              person you<br />
-              hired
-            </h2>
+            <h3 className="drxlo-headline">
+              One partner<br />
+              for strategy,<br />
+              design and build—<br />
+              zero handoffs,<br />
+              full ownership
+            </h3>
           </article>
 
           {/* 05 */}
