@@ -49,7 +49,7 @@ function SlideContent({ item }) {
 
   if (item.type === "soundFamiliar") {
     return (
-      <p className="font-syne text-4xl sm:text-6xl md:text-[104px] font-extrabold leading-none tracking-[-2px] sm:tracking-[-3.5px] text-paper-dark">
+      <p className="font-syne text-4xl sm:text-6xl md:text-[104px] font-extrabold leading-none tracking-[-2px] sm:tracking-[-3.5px] text-paper-dark text-center">
         Sound familiar? <br /> you&apos;re not alone.
       </p>
     )
@@ -57,7 +57,7 @@ function SlideContent({ item }) {
 
   if (item.type === "cta") {
     return (
-      <p className="align-center justify-center font-syne text-4xl sm:text-6xl md:text-[104px] font-extrabold leading-none tracking-[-2px] sm:tracking-[-3.5px]">
+      <p className="font-syne text-4xl sm:text-6xl md:text-[104px] font-extrabold leading-none tracking-[-2px] sm:tracking-[-3.5px] text-center">
         <span className="font-instrument text-3xl sm:text-5xl md:text-[84px] italic font-light tracking-[-2px] sm:tracking-[-3.5px] text-paper-dark">
           If you&apos;re experiencing any of these,
         </span>{" "}
